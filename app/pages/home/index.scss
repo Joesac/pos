@@ -5,6 +5,10 @@
     --default-border-color: rgba(34,36,38,.15);
 }
 
+.spacer {
+    flex: 1 1 1px
+}
+
 .app-container {
     width: 100%;
 
@@ -37,7 +41,9 @@
             margin-left: var(--products-area-container-width);
             
             .cart {
-                height: calc(100vh - (var(--topbar-height) + 80px));
+                height: calc(100vh - calc(var(--topbar-height) + var(--default-spacing) * 3 + 50px + 30px));
+                overflow-y: auto;
+                // border: 1px solid black;
                 
                 table {
                     .input {
@@ -46,21 +52,10 @@
                 }
             }
 
-            .checkout-footer {
+            .total-container {
                 height: 50px;
                 display: flex;
-
-                button {
-                    width: 50%;
-
-                    &#btnCharge {
-                        margin-right: var(--default-spacing);
-
-                    }
-                    &#btnCheque {
-                        margin-left: var(--default-spacing);
-                    }
-                }
+                align-items: center;
             }
         }
         
@@ -77,14 +72,23 @@
                 margin-bottom: var(--default-spacing);
             }
             .display-search-results-wrapper {
-
                 overflow-y: auto;
-
+                height: calc(100vh - calc(var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px) - var(--default-spacing));
+                margin-bottom: var(--default-spacing);
                 .product-item {
                     padding: 2rem;
-                    font-size: 2rem;
+                    font-size: 1.5rem;
                     margin-right: var(--default-spacing);
                     margin-bottom: var(--default-spacing);
+                }
+            }
+
+            .checkout-holder {
+                height: 50px;
+                display: flex;
+
+                button {
+                    width: 50%;
                 }
             }
         }

@@ -16,7 +16,7 @@
     <div class="app-container">
         <div class="topbar">
             <div class="app-name">TeleMart</div>
-            <div style="flex: 1 1 1px"></div>
+            <div class="spacer"></div>
             <div class="widgets">
                 <div class="timestamp">2:15pm</div>
                 <div class="user">
@@ -27,14 +27,20 @@
         <div class="products-current-sale-container">
             <div class="products">
                 <div class="search-container">
-                    <div class="ui fluid input">
+                    <div class="ui fluid input icon">
                         <input type="text" id="txtSearch" placeholder="Search for a product to sell...">
+                        <i class="icon search"></i>
                     </div>
                 </div>
                 <div class="display-search-results-wrapper">
                 </div>
+                <div class="checkout-holder">
+                    <button class="ui button green fluid" id="btnCharge">Charge</button>
+                    <button class="ui button green fluid" id="btnCheque">Cheque</button>
+                </div>
             </div>
             <div class="current-sale">
+                <h2>Current Sales</h2>
                 <div class="cart">
                     <table class="ui very basic table" id="tblCart">
                         <thead>
@@ -47,43 +53,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Milk</td>
-                                <td>
-                                    <div class="ui mini input">
-                                        <input type="text" value="31">
-                                    </div>
-                                </td>
-                                <td>87.93</td>
-                                <td>345.87</td>
-                                <td>
-                                    <button class="ui circular google plus icon button">
-                                        <i class="icon trash alternate outline"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Corn Flakes</td>
-                                <td>
-                                    <div class="ui mini input">
-                                        <input type="text" value="31">
-                                    </div>
-                                </td>
-                                <td>34</td>
-                                <td>56.6</td>
-                                <td>
-                                    <button class="ui circular google plus icon button">
-                                        <i class="icon trash alternate outline"></i>
-                                    </button>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div class="checkout-footer">
-                    <button class="ui button green fluid" id="btnCharge">Charge</button>
-                    <button class="ui button green fluid" id="btnCheque">Cheque</button>
+                <div class="total-container">
+                    <div class="total"><h3>TOTAL</h3></div>
+                    <div class="spacer"></div>
+                    <div class="total"><h3>GHC 384</h3></div>
                 </div>
             </div>
         </div>

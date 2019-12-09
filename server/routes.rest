@@ -2,9 +2,9 @@ POST http://localhost:3000/product
 Content-Type: application/json
 
 {
-    "name": "Nicon Camera",
-    "price": 2,
-    "category": "Technology"
+    "name": "Special Mineral Water",
+    "price": 5,
+    "category": "Bottled Water"
 }
 
 ###
