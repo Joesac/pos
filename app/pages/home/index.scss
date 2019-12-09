@@ -1,0 +1,92 @@
+:root {
+    --products-area-container-width: 500px;
+    --default-spacing: 1rem;
+    --topbar-height: 50px;
+    --default-border-color: rgba(34,36,38,.15);
+}
+
+.app-container {
+    width: 100%;
+
+    .topbar {
+        width: 100%;
+        padding: var(--default-spacing);
+        background-color: #1b1c1d;
+        color: white;
+        height: var(--topbar-height);
+        display: flex;
+
+        .widgets {
+            display: flex;
+
+            .timestamp,
+            .user {
+                padding-left: var(--default-spacing);
+                padding-right: var(--default-spacing);
+            }
+        }
+    }
+
+    .products-current-sale-container {
+        width: 100%;
+        padding: var(--default-spacing);
+        display: flex;
+
+        .current-sale {
+            width: calc(100% - var(--products-area-container-width));
+            margin-left: var(--products-area-container-width);
+            
+            .cart {
+                height: calc(100vh - (var(--topbar-height) + 80px));
+                
+                table {
+                    .input {
+                        max-width: 50px;
+                    }
+                }
+            }
+
+            .checkout-footer {
+                height: 50px;
+                display: flex;
+
+                button {
+                    width: 50%;
+
+                    &#btnCharge {
+                        margin-right: var(--default-spacing);
+
+                    }
+                    &#btnCheque {
+                        margin-left: var(--default-spacing);
+                    }
+                }
+            }
+        }
+        
+        .products {
+            width: var(--products-area-container-width);            
+            padding: var(--default-spacing);
+            border-right: 1px solid var(--default-border-color);
+            position: fixed;
+            top: var(--topbar-height);
+            left: 0;
+            bottom: 0;
+
+            .search-container {
+                margin-bottom: var(--default-spacing);
+            }
+            .display-search-results-wrapper {
+
+                overflow-y: auto;
+
+                .product-item {
+                    padding: 2rem;
+                    font-size: 2rem;
+                    margin-right: var(--default-spacing);
+                    margin-bottom: var(--default-spacing);
+                }
+            }
+        }
+    }
+}

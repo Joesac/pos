@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>POS</title>
+    <link rel="stylesheet" href="../../vendor/semantic-ui/semantic.min.css">
+    <link rel="stylesheet" href="../../styles/global.min.css">
+    <link rel="stylesheet" href="./index.min.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <div class="topbar">
+            <div class="app-name">TeleMart</div>
+            <div style="flex: 1 1 1px"></div>
+            <div class="widgets">
+                <div class="timestamp">2:15pm</div>
+                <div class="user">
+                    <i class="user icon"></i> Joesac
+                </div>
+            </div>
+        </div>
+        <div class="products-current-sale-container">
+            <div class="products">
+                <div class="search-container">
+                    <div class="ui fluid input">
+                        <input type="text" id="txtSearch" placeholder="Search for a product to sell...">
+                    </div>
+                </div>
+                <div class="display-search-results-wrapper">
+                </div>
+            </div>
+            <div class="current-sale">
+                <div class="cart">
+                    <table class="ui very basic table" id="tblCart">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Milk</td>
+                                <td>
+                                    <div class="ui mini input">
+                                        <input type="text" value="31">
+                                    </div>
+                                </td>
+                                <td>87.93</td>
+                                <td>345.87</td>
+                                <td>
+                                    <button class="ui circular google plus icon button">
+                                        <i class="icon trash alternate outline"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Corn Flakes</td>
+                                <td>
+                                    <div class="ui mini input">
+                                        <input type="text" value="31">
+                                    </div>
+                                </td>
+                                <td>34</td>
+                                <td>56.6</td>
+                                <td>
+                                    <button class="ui circular google plus icon button">
+                                        <i class="icon trash alternate outline"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="checkout-footer">
+                    <button class="ui button green fluid" id="btnCharge">Charge</button>
+                    <button class="ui button green fluid" id="btnCheque">Cheque</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="../../vendor/jquery-3.4.1.min.js"></script>
+    <script src="../../vendor/semantic-ui/semantic.min.js"></script>
+    <!-- <script src="../../vendor/semantic-ui/calendar.min.js"></script>
+    <script src="../../vendor/semantic-ui/range-slider.js"></script> -->
+    <script src="./index.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
+</body>
+
+</html>

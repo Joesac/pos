@@ -1,0 +1,37 @@
+POST http://localhost:3000/product
+Content-Type: application/json
+
+{
+    "name": "Nicon Camera",
+    "price": 2,
+    "category": "Technology"
+}
+
+###
+GET http://localhost:3000/products/5dececa6c3a46038ec732367
+
+###
+GET http://localhost:3000/products
+
+###
+DELETE http://localhost:3000/products/5dece843098174425041dd8c
+
+###
+PATCH http://localhost:3000/products/5deced17dc15fc39d4098976
+Content-Type: application/json
+
+{
+    "price": "99.9",
+    "name": "Phone",
+    "category": "Technology"
+}
+
+###
+POST http://localhost:3000/product
+Content-Type: application/json
+
+{
+    "name": "Phone",
+    "price": 0.23,
+    "category": "Diary"
+}
