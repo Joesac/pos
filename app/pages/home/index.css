@@ -9,6 +9,25 @@
   flex: 1 1 1px;
 }
 
+.red {
+  background: red;
+  color: white;
+}
+
+#printCheckoutReceiptModal .header {
+  display: flex;
+  justify-content: center;
+}
+
+#printCheckoutReceiptModal .content {
+  display: flex;
+  justify-content: center;
+}
+
+#printCheckoutReceiptModal .content button {
+  margin: 2rem;
+}
+
 .app-container {
   width: 100%;
 }
@@ -56,6 +75,7 @@
   height: 50px;
   display: flex;
   align-items: center;
+  border-top: 1px solid var(--default-border-color);
 }
 
 .app-container .products-current-sale-container .products {
@@ -76,11 +96,14 @@
   overflow-y: auto;
   height: calc(100vh - calc(var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px) - var(--default-spacing));
   margin-bottom: var(--default-spacing);
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .app-container .products-current-sale-container .products .display-search-results-wrapper .product-item {
-  padding: 2rem;
-  font-size: 1.5rem;
+  padding: 1rem;
+  width: 130px;
+  max-height: 100px;
   margin-right: var(--default-spacing);
   margin-bottom: var(--default-spacing);
 }

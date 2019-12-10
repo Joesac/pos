@@ -9,6 +9,28 @@
     flex: 1 1 1px
 }
 
+.red {
+    background: red;
+    color: white;
+}
+
+#printCheckoutReceiptModal {
+
+    .header {
+        display: flex;
+        justify-content: center;
+    }
+
+    .content {
+        display: flex;
+        justify-content: center;
+
+        button {
+            margin: 2rem;
+        }
+    }
+}
+
 .app-container {
     width: 100%;
 
@@ -44,7 +66,7 @@
                 height: calc(100vh - calc(var(--topbar-height) + var(--default-spacing) * 3 + 50px + 30px));
                 overflow-y: auto;
                 // border: 1px solid black;
-                
+
                 table {
                     .input {
                         max-width: 50px;
@@ -56,6 +78,7 @@
                 height: 50px;
                 display: flex;
                 align-items: center;
+                border-top: 1px solid var(--default-border-color);
             }
         }
         
@@ -75,9 +98,13 @@
                 overflow-y: auto;
                 height: calc(100vh - calc(var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px) - var(--default-spacing));
                 margin-bottom: var(--default-spacing);
+                display: flex;
+                flex-wrap: wrap;
+
                 .product-item {
-                    padding: 2rem;
-                    font-size: 1.5rem;
+                    padding: 1rem;
+                    width: 130px;
+                    max-height: 100px;
                     margin-right: var(--default-spacing);
                     margin-bottom: var(--default-spacing);
                 }

@@ -2,7 +2,7 @@ POST http://localhost:3000/product
 Content-Type: application/json
 
 {
-    "name": "Special Mineral Water",
+    "name": "Verna",
     "price": 5,
     "category": "Bottled Water"
 }

@@ -12,7 +12,6 @@
 </head>
 
 <body>
-
     <div class="app-container">
         <div class="topbar">
             <div class="app-name">TeleMart</div>
@@ -35,8 +34,8 @@
                 <div class="display-search-results-wrapper">
                 </div>
                 <div class="checkout-holder">
-                    <button class="ui button green fluid" id="btnCharge">Charge</button>
-                    <button class="ui button green fluid" id="btnCheque">Cheque</button>
+                    <button class="ui button green fluid" id="btnChargeCash">Charge</button>
+                    <button class="ui button green fluid" id="btnChargeCheque">Cheque</button>
                 </div>
             </div>
             <div class="current-sale">
@@ -48,7 +47,7 @@
                                 <th>Description</th>
                                 <th>Qty</th>
                                 <th>Price</th>
-                                <th>Total</th>
+                                <th>Amount</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -58,11 +57,43 @@
                 </div>
 
                 <div class="total-container">
-                    <div class="total"><h3>TOTAL</h3></div>
+                    <div>
+                        <h3>TOTAL</h3>
+                    </div>
                     <div class="spacer"></div>
-                    <div class="total"><h3>GHC 384</h3></div>
+                    <div class="total" id="totalVal">
+                        <h3>GHC 0.00</h3>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Amount Customer Paid Modal -->
+    <div class="ui modal tiny" id="amountCustomerPaidModal">
+        <div class="header">
+            Cash Received
+        </div>
+        <div class="content">
+            <div class="ui input big fluid">
+                <input type="text" id="txtAmountReceived" placeholder="GHC0.00" style="text-align: right;">
+            </div>
+        </div>
+        <div class="actions">
+            <button class="ui button red" id="btnCancelAmountCustomerPaidModal">Cancel</button>
+            <button class="ui button green" id="btnCheckoutAmountCustomerPaid">Ok</button>
+        </div>
+    </div>
+
+    <!-- Print Checkout Receipt Modal -->
+    <div class="ui modal basic" id="printCheckoutReceiptModal">
+        <i class="close icon"></i>
+        <div class="header">
+            Print Receipt?
+        </div>
+        <div class="image content">
+            <button class="ui button green massive">Print</button>
+            <button class="ui button red massive">Cancel</button>
         </div>
     </div>
 

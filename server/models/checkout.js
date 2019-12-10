@@ -1,15 +1,6 @@
 const mongoose = require('mongoose')
 
 const CheckoutSchema = new mongoose.Schema({
-    product: {
-        type: String
-    },
-    quantity: {
-        type: Number
-    },
-    totalAmount: {
-        type: Number
-    },
     dateAdded: {
         type: Date,
         default: new Date(new Date().getMonth() + 1 + '/' + new Date().getDate() + '/' + new Date().getFullYear())
@@ -17,6 +8,25 @@ const CheckoutSchema = new mongoose.Schema({
     timestamp: {
         type: Date,
         default: Date.now
+    },
+    sale: {
+        amountReceived: {
+            type: Number
+        },
+        paymentType: {
+            type: String
+        },
+        products: [{
+            name: {
+                type: String
+            },
+            qty: {
+                type: Number
+            },
+            price: {
+                type: Number
+            }
+        }]
     }
 })
 
