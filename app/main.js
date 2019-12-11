@@ -1,7 +1,9 @@
 const { app, BrowserWindow } = require("electron");
+const ipc = require('electron').ipcMain
 const path = require("path");
 
 let mainWindow;
+let printWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -31,6 +33,14 @@ function createWindow() {
   mainWindow.webContents.once('did-finish-load', () => {
     mainWindow.show();
   })
+
+  printWindow = new BrowserWindow({
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
+
+  printWindow.loadFile(path.join(__dirname, '/pages/print/index.html'))
 }
 
 app.on('ready', createWindow);
@@ -39,4 +49,13 @@ app.on('window-all-closed', () => {
 })
 app.on('activate', () => {
     if (mainWindow === null) createWindow()
+})
+
+ipc.on('prepare-receipt-print', (evt, data) => {
+  printWindow.webContents.send('print-automatically', data)
+})
+
+ipc.on('begin-print', (evt, data) => {
+  const win = BrowserWindow.fromWebContents(evt.sender)
+  win.webContents.print({silent: true})
 })

@@ -91,12 +91,16 @@
             left: 0;
             bottom: 0;
 
+            .menu {
+                margin-bottom: var(--default-spacing);
+            }
+
             .search-container {
                 margin-bottom: var(--default-spacing);
             }
             .display-search-results-wrapper {
                 overflow-y: auto;
-                height: calc(100vh - calc(var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px) - var(--default-spacing));
+                height: calc(100vh - calc(60px + var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px) - var(--default-spacing));
                 margin-bottom: var(--default-spacing);
                 display: flex;
                 flex-wrap: wrap;

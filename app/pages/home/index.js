@@ -1,3 +1,5 @@
+const ipc = require('electron').ipcRenderer
+
 const base_url = "http://localhost:3000";
 const displaySearchResultsWrapper = $(".display-search-results-wrapper");
 const txtSearch = $("#txtSearch");
@@ -10,6 +12,11 @@ const amountCustomerPaidModal = $("#amountCustomerPaidModal")
 const btnCancelAmountCustomerPaidModal = $("#btnCancelAmountCustomerPaidModal")
 const btnCheckoutAmountCustomerPaid = $("#btnCheckoutAmountCustomerPaid")
 const timestamp = $(".timestamp")
+const btnPrintReceipt = $("#btnPrintReceipt")
+const totalContainer = $('.total-container')
+const btnClosePrintReceiptModal = $("#btnClosePrintReceiptModal")
+const txtAmountReceived = $("#txtAmountReceived")
+const btnNew = $("#btnNew")
 
 let productsArrayTempStore = [];
 
@@ -121,11 +128,11 @@ btnCancelAmountCustomerPaidModal.click(function() {
 })
 
 // Charging by Cash
+let productsResData;
 btnCheckoutAmountCustomerPaid.on("click", function() {
   let allProductsDetails = tblCart.find("tbody tr");
   let productsPurchasedArray = [];
   let dataToSend = {};
-  let txtAmountReceived = $("#txtAmountReceived")
 
   $.each(allProductsDetails, function(index, item) {
     let tds = $(this).children("td"),
@@ -151,6 +158,7 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
     dataType: "json",
     success: function(res) {
       console.log(res)
+      productsResData = res
       printCheckoutReceiptModal.modal({'transition': 'horizontal flip', 'closable': false}).modal('show')
     },
     error: function(e) {
@@ -158,6 +166,29 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
     }
   });
 });
+
+// Printing Receipt
+btnPrintReceipt.click(function() {
+    console.log("Printing receipt...")
+    console.log(cart, totalContainer, txtAmountReceived.val())
+    data = {}
+    printCheckoutReceiptModal.modal("close")
+    
+    ipc.send('prepare-receipt-print', productsResData)
+})
+
+// Clicking on new Sale Button
+// reset the amount received textbox
+btnNew.click(function() {
+  txtAmountReceived.val("")
+  cart.find("tbody").empty()
+  totalVal.text('0.00')
+})
+
+// Hiding Print Receipt Modal
+btnClosePrintReceiptModal.click(function() {
+    printCheckoutReceiptModal.modal("close")
+})
 
 // Functions
 function sumAllCartItems(tds) {
@@ -267,7 +298,12 @@ function showAMPM(time) {
 
     let moduloTime = hour % 12
     if (moduloTime < 12) {
-        return '0' + moduloTime + ':' + minute + ':' + second + 'PM'
+      if (moduloTime.toString().length < 2) {
+        moduloTime = '0' + moduloTime
+      } else {
+        moduloTime = 12
+      }
+        return moduloTime + ':' + minute + ':' + second + 'PM'
     } else {
         return hour + ':' + minute + ':' + second + 'AM'
     }

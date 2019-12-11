@@ -96,7 +96,6 @@ app.post("/product", async (req, res) => {
 
 // Insert Checkout
 app.post("/checkout", async (req, res) => {
-    console.log(req.body)
   try {
     const checkout = new Checkout({ sale: req.body });
     const newCheckout = await checkout.save();

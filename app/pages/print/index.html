@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <link rel="stylesheet" href="../../vendor/semantic-ui/semantic.min.css"> -->
+    <link rel="stylesheet" href="../../styles/global.min.css">
+    <link rel="stylesheet" href="./index.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Amount</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div class="total-container">
+            <div>TOTAL</div>
+            <div class="spacer"></div>
+            <div class="total" id="totalVal">GHC 0.00</div>
+        </div>
+        <div class="amountReceived">Amount Received <span></span></div>
+        <div class="changeGiven">Change <span></span></div>
+    </div>
+
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="../../vendor/jquery-3.4.1.min.js"></script>
+    <!-- <script src="../../vendor/semantic-ui/semantic.min.js"></script> -->
+    <!-- <script src="../../vendor/semantic-ui/calendar.min.js"></script>
+            <script src="../../vendor/semantic-ui/range-slider.js"></script> -->
+    <script src="./index.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
+</body>
+
+</html>
