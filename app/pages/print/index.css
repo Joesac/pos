@@ -1,7 +1,18 @@
+@page {
+  margin: 0mm;
+  padding: 0mm;
+}
+
 html,
-body {
+body,
+table,
+th,
+tr,
+td {
   margin: 0;
   padding: 0;
+  font-weight: normal;
+  font-size: 0.8rem;
 }
 
 hr {
@@ -25,6 +36,14 @@ hr {
 
 .container .table-container table {
   width: inherit;
+}
+
+.container .table-container table th:first-child {
+  text-align: left;
+}
+
+.container .table-container table td:nth-child(n+2) {
+  text-align: center;
 }
 
 .container .total-container {

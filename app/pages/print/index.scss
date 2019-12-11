@@ -1,7 +1,19 @@
+@page
+{
+    margin: 0mm;
+    padding : 0mm;
+}
+
 html,
-body {
+body,
+table,
+th,
+tr,
+td {
     margin: 0;
     padding: 0;
+    font-weight: normal;
+    font-size: 0.8rem;
 }
 
 hr {
@@ -22,6 +34,12 @@ hr {
         width: 100%;
         table {
             width: inherit;
+            th:first-child {
+                text-align: left;
+            }
+            td:nth-child(n+2) {
+                text-align: center;
+            }
         }
     }
 
