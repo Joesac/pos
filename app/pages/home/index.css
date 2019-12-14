@@ -14,6 +14,10 @@
   color: white;
 }
 
+.hide {
+  display: none;
+}
+
 #printCheckoutReceiptModal .header {
   display: flex;
   justify-content: center;
@@ -28,11 +32,7 @@
   margin: 2rem;
 }
 
-.app-container {
-  width: 100%;
-}
-
-.app-container .topbar {
+.topbar {
   width: 100%;
   padding: var(--default-spacing);
   background-color: #1b1c1d;
@@ -41,20 +41,69 @@
   display: flex;
 }
 
-.app-container .topbar .widgets {
+.topbar .app-name {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.topbar .widgets {
   display: flex;
 }
 
-.app-container .topbar .widgets .timestamp,
-.app-container .topbar .widgets .user {
+.topbar .widgets .timestamp,
+.topbar .widgets .user {
   padding-left: var(--default-spacing);
   padding-right: var(--default-spacing);
+}
+
+.app-container {
+  width: 100%;
+  position: relative;
+}
+
+.app-container .inner-page {
+  position: fixed;
+  top: var(--topbar-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: white;
+  padding: var(--default-spacing);
+}
+
+.app-container .inner-page .btnCreateNew {
+  margin-bottom: var(--default-spacing);
+}
+
+.app-container .inner-page > .input > input {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.app-container .inner-page table {
+  border-radius: 0;
+}
+
+.app-container .inner-page table tr {
+  cursor: pointer;
+}
+
+.app-container .inner-page.product-page .products-list-container {
+  display: flex;
+  overflow-y: auto;
+  height: calc(100vh - 200px);
+}
+
+.app-container .inner-page .search-bar {
+  width: 100%;
 }
 
 .app-container .products-current-sale-container {
   width: 100%;
   padding: var(--default-spacing);
   display: flex;
+  padding-top: calc(var(--topbar-height) + var(--default-spacing));
 }
 
 .app-container .products-current-sale-container .current-sale {
@@ -65,6 +114,20 @@
 .app-container .products-current-sale-container .current-sale .cart {
   height: calc(100vh - calc(var(--topbar-height) + var(--default-spacing) * 3 + 50px + 30px));
   overflow-y: auto;
+}
+
+.app-container .products-current-sale-container .current-sale .cart table th:nth-child(n + 2),
+.app-container .products-current-sale-container .current-sale .cart table td:nth-child(n + 2) {
+  text-align: center;
+}
+
+.app-container .products-current-sale-container .current-sale .cart table th {
+  font-size: 1.2rem;
+}
+
+.app-container .products-current-sale-container .current-sale .cart table td {
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 .app-container .products-current-sale-container .current-sale .cart table .input {
@@ -98,16 +161,24 @@
 
 .app-container .products-current-sale-container .products .display-search-results-wrapper {
   overflow-y: auto;
-  height: calc(100vh - calc(60px + var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px) - var(--default-spacing));
+  height: calc( 100vh - calc( 60px + var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px ) - var(--default-spacing));
   margin-bottom: var(--default-spacing);
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.app-container .products-current-sale-container .products .display-search-results-wrapper > h2 {
+  width: 100%;
+  align-self: center;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .app-container .products-current-sale-container .products .display-search-results-wrapper .product-item {
-  padding: 1rem;
-  width: 130px;
-  max-height: 100px;
+  padding: var(--default-spacing);
+  width: 140px;
+  height: 100px;
   margin-right: var(--default-spacing);
   margin-bottom: var(--default-spacing);
 }

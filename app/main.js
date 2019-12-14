@@ -28,6 +28,9 @@ function createWindow() {
 
   mainWindow.on("closed", function() {
     mainWindow = null;
+    if (printWindow) {
+      printWindow.close()
+    }
   });
 
   mainWindow.webContents.once('did-finish-load', () => {

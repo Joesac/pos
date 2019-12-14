@@ -1,11 +1,11 @@
 const ipc = require('electron').ipcRenderer
 
 const container = $(".container")
-const tbody = $("tbody")
+const tbodyProducts = $(".table-container tbody")
 const totalVal = $("#totalVal")
 const amountReceived = $(".amountReceived")
 const changeGiven = $(".changeGiven")
-const timeStamp = $(".timestamp")
+const timeStamp = $("#timestamp")
 
 
 ipc.on('print-automatically', (evt, data) => {
@@ -21,19 +21,19 @@ ipc.on('print-automatically', (evt, data) => {
         dataToAppend += `<td>${item.price}</td>`
         dataToAppend += `<td>${amount}</td></tr>`
     }
-    tbody.html(dataToAppend)
+    tbodyProducts.html(dataToAppend)
     totalVal.empty().append(sumTotal)
-    amountReceived.children("span").text(sale.amountReceived)
-    changeGiven.children("span").text(Number(sale.amountReceived) - Number(sumTotal))
-    timeStamp.text(data.timeStamp)
+    amountReceived.text(sale.amountReceived)
+    changeGiven.text(Number(sale.amountReceived) - Number(sumTotal))
+    timeStamp.text(convertTimeStampToHRT(data.timestamp) )
 
 
     ipc.send("begin-print", data)
 })
 
 // Functions
-function timestamp() {
-    var today = new Date();
+function convertTimeStampToHRT(timestamp) {
+    today = new Date(timestamp)
     var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
     var time = showAMPM(today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
     return date+' '+time;
@@ -44,20 +44,25 @@ function showAMPM(time) {
     hour = splitTime[0]
     minute = splitTime[1]
     second = splitTime[2]
+    ampm = 'PM'
 
     if (minute.length < 2) minute = '0' + minute
     if (second.length < 2) second = '0' + second
-    if (hour == 0) return 12 + ':' + minute + ':' + second + 'AM'
 
-    let moduloTime = hour % 12
-    if (moduloTime < 12) {
-      if (moduloTime.toString().length < 2) {
-        moduloTime = '0' + moduloTime
-      } else {
-        moduloTime = 12
-      }
-        return moduloTime + ':' + minute + ':' + second + 'PM'
-    } else {
-        return hour + ':' + minute + ':' + second + 'AM'
+    if (hour < 12) {
+        ampm = 'AM'
     }
+    let moduloTime = hour % 12
+
+    if (moduloTime == 0) {
+        hour = '12'
+    } else {
+        if (moduloTime < 12) {
+            hour = moduloTime
+        } else {
+            return hour
+        }
+    }
+
+    return hour + ':' + minute + ':' + second + ampm
 }

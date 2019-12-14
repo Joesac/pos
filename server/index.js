@@ -3,9 +3,9 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Category = require("./models/category");
 const Product = require("./models/product");
 const Checkout = require("./models/checkout");
+const User = require("./models/user")
 
 mongoose.connect(`${process.env.CONNECTION}/${process.env.DATABASE}`, {
   useNewUrlParser: true,
@@ -18,26 +18,10 @@ connection.once("open", () => console.log("Database Connected"));
 
 app.use(express.json());
 
-async function getCategory(req, res, next) {
-  let foundCategory;
-  let category;
-
-  try {
-    category = await Category.findById(req.params.id);
-    if (category === null) {
-      return res.status(404).json({ message: "Cannot find category" });
-    }
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-
-  res.foundCategory = category;
-  next();
-}
-
 async function getProduct(req, res, next) {
   let foundProduct;
   let product;
+  
   try {
     product = await Product.findById(req.params.id);
     if (product === null) {
@@ -48,6 +32,23 @@ async function getProduct(req, res, next) {
   }
 
   res.foundProduct = product;
+  next();
+}
+
+async function getUser(req, res, next) {
+  let foundUser;
+  let user;
+  
+  try {
+    user = await User.findById(req.params.id);
+    if (user === null) {
+      return res.status(404).json({ message: "Cannot find user" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+
+  res.foundUser = user;
   next();
 }
 
@@ -68,24 +69,11 @@ async function getCheckout(req, res, next) {
 }
 
 // INSERT
-// Insert Category
-app.post("/category", async (req, res) => {
-  const { name } = req.body;
-  const category = new Category({ name: name });
-
-  try {
-    const newCategory = await category.save();
-    res.status(201).json(newCategory);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
 // Insert Product
 app.post("/product", async (req, res) => {
-  const { name, category, price } = req.body;
-  const product = new Product({ name: name, price: price, category: category });
-
+  const { name, price, qty } = req.body;
+  const product = new Product({ name: name, price: price, qty: qty });
+  
   try {
     const newProduct = await product.save();
     res.status(201).json(newProduct);
@@ -105,17 +93,19 @@ app.post("/checkout", async (req, res) => {
   }
 });
 
-// READ
-// Get all Categories
-app.get("/categories", async (req, res) => {
+// Insert User
+app.post("/user", async (req, res) => {
+  const { fullname, username, password, role } = req.body
   try {
-    const categories = await Category.find({});
-    res.send(categories);
+    const user = new User({ fullname: fullname, username: username, password: password, role: role });
+    const newUser = await user.save();
+    res.status(201).json(newUser);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(400).json({ message: err.message });
   }
 });
 
+// READ
 // Get all products
 app.get("/products", async (req, res) => {
   try {
@@ -139,11 +129,6 @@ app.get("/search/products/", async (req, res) => {
   }
 });
 
-// Get a Category
-app.get("/categories/:id", getCategory, (req, res) => {
-  res.send(res.foundCategory);
-});
-
 // Get a Product
 app.get("/products/:id", getProduct, (req, res) => {
   res.send(res.foundProduct);
@@ -154,32 +139,29 @@ app.get("/checkouts/:id", getCheckout, (req, res) => {
   res.send(res.foundCheckout);
 });
 
-// UPDATE
-// Update a specific Category
-app.patch("/categories/:id", getCategory, async (req, res) => {
-  if (req.body.name !== null) {
-    res.foundCategory.name = req.body.name;
-  }
-
+// Get all users
+app.get("/users", async (req, res) => {
   try {
-    updatedCategory = await res.foundCategory.save();
-    res.json(updatedCategory);
+    const users = await User.find({});
+    res.send(users);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-app.patch("/products/:id", getProduct, async (req, res) => {
+// UPDATE
+app.post("/products/edit/:id", getProduct, async (req, res) => {
+  
   if (req.body.name !== null) {
     res.foundProduct.name = req.body.name;
   }
   if (req.body.price !== null) {
     res.foundProduct.price = req.body.price;
   }
-  if (req.body.category !== null) {
-    res.foundProduct.category = req.body.category;
+  if (req.body.qty !== null) {
+    res.foundProduct.qty = req.body.qty;
   }
-
+  
   try {
     updatedProduct = await res.foundProduct.save();
     res.json(updatedProduct);
@@ -188,17 +170,30 @@ app.patch("/products/:id", getProduct, async (req, res) => {
   }
 });
 
-// DELETE
-// Delete a Category
-app.delete("/categories/:id", getCategory, async (req, res) => {
+app.post("/users/edit/:id", getUser, async (req, res) => {
+  
+  if (req.body.fullname !== null) {
+    res.foundUser.fullname = req.body.fullname;
+  }
+  if (req.body.username !== null) {
+    res.foundUser.username = req.body.username;
+  }
+  if (req.body.password !== null) {
+    res.foundUser.password = req.body.password;
+  }
+  if (req.body.role !== null) {
+    res.foundUser.role = req.body.role
+  }
+  
   try {
-    await res.foundCategory.remove();
-    res.json({ message: "Category removed" });
+    updatedUser = await res.foundUser.save();
+    res.json(updatedUser);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(400).json({ message: err.message });
   }
 });
 
+// DELETE
 // Delete a product
 app.delete("/products/:id", getProduct, async (req, res) => {
   try {

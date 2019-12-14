@@ -13,8 +13,30 @@
 
 <body>
     <div class="container">
-        <div class="about-company"></div>
-        <div class="timestamp"></div>
+        <div class="about-company">
+            PlainBlue Company<br>
+            P.O.Box 101<br>
+            New York - United States<br>
+            Tel: 0542462657/0248274204
+        </div>
+
+        <div class="table-receipt-preamble">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Bill No.</td>
+                        <td id="billNo">bill no.</td>
+                        <td>Date</td>
+                        <td id="timestamp">date</td>
+                    </tr>
+                    <tr>
+                        <td>User</td>
+                        <td id="user">user</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr width="100%">
         <div class="table-container">
             <table>
                 <thead>
@@ -27,15 +49,29 @@
                 </tbody>
             </table>
         </div>
-        <hr>
+        <hr width="100%">
         <div class="total-container">
-            <div>TOTAL</div>
-            <div class="spacer"></div>
-            <div class="total" id="totalVal">GHC 0.00</div>
+            <table>
+                <tr>
+                    <td>
+                        <h3>TOTAL</h3>
+                    </td>
+                    <td class="total">
+                        <h3 id="totalVal"></h3>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div class="amountReceived">Amount Received <span></span></div>
-        <div class="changeGiven">Change <span></span></div>
-        <div class="footer">Software by: PlainBlue 0542462657</div>
+
+        <div class="money-issues">
+            <div>Amount Received: <span class="amountReceived"></span></div>
+            <div>Change: <span class="changeGiven"></span></div>
+        </div>
+
+        <div class="footer">
+            Thanks for shopping with us<br><br>
+            Software by: PlainBlue 0542462657
+        </div>
     </div>
 
     <script>

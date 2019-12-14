@@ -10,9 +10,9 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    category: {
-        type: String,
-        required: true
+    qty: {
+        type: Number,
+        default: 0
     },
     dateAdded: {
         type: Date,

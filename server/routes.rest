@@ -4,14 +4,14 @@ Content-Type: application/json
 {
     "name": "Verna",
     "price": 5,
-    "category": "Bottled Water"
+    "qty": "Bottled Water"
 }
 
 ###
 GET http://localhost:3000/products/5dececa6c3a46038ec732367
 
 ###
-GET http://localhost:3000/products
+GET http://localhost:3000/users
 
 ###
 DELETE http://localhost:3000/products/5dece843098174425041dd8c

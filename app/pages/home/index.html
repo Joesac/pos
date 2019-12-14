@@ -12,9 +12,21 @@
 </head>
 
 <body>
-    <div class="app-container">
+
+    <div class="ui sidebar inverted vertical menu">
+        <a class="item" id="btnMenuSell">
+            SELL
+        </a>
+        <a class="item" id="btnMenuUser">
+            <i class="icon user"></i> USERS
+        </a>
+        <a class="item" id="btnMenuProduct">
+            PRODUCT
+        </a>
+    </div>
+    <div class="ui top fixed menu">
         <div class="topbar">
-            <div class="app-name">TeleMart</div>
+            <div class="app-name" id="iconMenu"><i class="icon align justify"></i>TeleMart</div>
             <div class="spacer"></div>
             <div class="widgets">
                 <div class="timestamp">2:15pm</div>
@@ -23,54 +35,107 @@
                 </div>
             </div>
         </div>
-        <div class="products-current-sale-container">
-            <div class="products">
-                    <div class="menu">
-                            <button class="ui button big youtube" id="btnNew">New</button>
-                        </div>
-                <div class="search-container">
+    </div>
+    <div class="pusher">
+        <div class="app-container">
+            <div class="user-page inner-page hide">
+                <h2>Users</h2>
+                <button class="ui button blue btnCreateNew" id="btnCreateNewUser">Create New User</button>
+                <div class="search-bar">
                     <div class="ui fluid input icon">
-                        <input type="text" id="txtSearch" placeholder="Search for a product to sell...">
+                        <input type="text" id="txtUserSearch" placeholder="Search User">
                         <i class="icon search"></i>
                     </div>
                 </div>
-                <div class="display-search-results-wrapper">
-                </div>
-                <div class="checkout-holder">
-                    <button class="ui button green fluid" id="btnChargeCash">Charge</button>
-                    <button class="ui button green fluid" id="btnChargeCheque">Cheque</button>
-                </div>
-            </div>
-            <div class="current-sale">
-                <h2>Current Sales</h2>
-                <div class="cart">
-                    <table class="ui very basic table" id="tblCart">
+                <div class="user-list-container">
+                    <table class="ui compact table selectable" id="tblUsersList">
                         <thead>
                             <tr>
-                                <th>Description</th>
-                                <th>Qty</th>
-                                <th>Price</th>
-                                <th>Amount</th>
-                                <th>Action</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Role</th>
                             </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div class="product-page inner-page hide">
+                <h2>Product</h2>
+                <button class="ui button blue btnCreateNew" id="btnCreateNewPdt">Create New Product</button>
+                <div class="ui fluid input icon">
+                    <input type="text" id="txtProductSearch" placeholder="Search Product">
+                    <i class="icon search"></i>
+                </div>
+                <div class="products-list-container">
+                    <table class="ui compact table selectable" id="tblProductsList">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                <div class="total-container">
-                    <div>
-                        <h3>TOTAL</h3>
+            <div class="products-current-sale-container">
+                <div class="products">
+                    <div class="menu">
+                        <button class="ui button big youtube" id="btnNew">New</button>
                     </div>
-                    <div class="spacer"></div>
-                    <div class="total" id="totalVal">
-                        <h3>GHC 0.00</h3>
+                    <div class="search-container">
+                        <div class="ui fluid input icon">
+                            <input type="text" id="txtSearch" placeholder="Search for a product to sell...">
+                            <i class="icon search"></i>
+                        </div>
+                    </div>
+                    <div class="display-search-results-wrapper">
+                        <h2>Nothing Searched for yet</h2>
+                    </div>
+                    <div class="checkout-holder">
+                        <button class="ui button green fluid" id="btnChargeCash">Charge</button>
+                        <button class="ui button green fluid" id="btnChargeCheque">Cheque</button>
+                    </div>
+                </div>
+                <div class="current-sale">
+                    <h2>Current Sales</h2>
+                    <div class="cart">
+                        <table class="ui very basic table" id="tblCart">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="total-container">
+                        <div>
+                            <h3>TOTAL</h3>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="total" id="totalVal">
+                            <h3>GHC0.00</h3>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+
 
     <!-- Amount Customer Paid Modal -->
     <div class="ui modal tiny" id="amountCustomerPaidModal">
@@ -83,20 +148,171 @@
             </div>
         </div>
         <div class="actions">
-            <button class="ui button red" id="btnCancelAmountCustomerPaidModal">Cancel</button>
+            <button class="ui button deny red" id="btnCancelAmountCustomerPaidModal">Cancel</button>
             <button class="ui button green" id="btnCheckoutAmountCustomerPaid">Ok</button>
         </div>
     </div>
 
     <!-- Print Checkout Receipt Modal -->
     <div class="ui modal basic" id="printCheckoutReceiptModal">
-        <i class="close icon"></i>
         <div class="header">
             Print Receipt?
         </div>
         <div class="image content">
             <button class="ui button green massive" id="btnPrintReceipt">Print</button>
-            <button class="ui button red massive" id="btnClosePrintReceiptModal">Cancel</button>
+            <button class="ui button deny red massive" id="btnClosePrintReceiptModal">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Adding New Product Modal -->
+    <div class="ui modal small" id="addNewProductModal">
+        <div class="header">
+            Create New Product
+        </div>
+        <div class="content">
+            <div class="ui form">
+                <div class="field">
+                    <label>Product Name</label>
+                    <input type="text" placeholder="Product Name" id="newPdtName">
+                </div>
+                <div class="field">
+                    <label>Price</label>
+                    <input type="text" placeholder="Price" id="newPdtPrice">
+                </div>
+                <div class="field">
+                    <label>Quantity</label>
+                    <input type="number" placeholder="Qty" id="newPdtQty">
+                </div>
+                <div class="ui success message">
+                    <p>Product Added!</p>
+                </div>
+                <div class="ui error message">
+                    <p>Error: <span></span></p>
+                </div>
+            </div>
+
+        </div>
+        <div class="actions">
+            <button class="ui deny button red" id="btnCancelNewProduct">Close</button>
+            <button class="ui button green" id="btnSaveNewProduct">Save</button>
+        </div>
+    </div>
+
+    <!-- Editing Product Modal -->
+    <div class="ui modal small" id="editProductModal">
+        <div class="header">
+            Edit Product
+        </div>
+        <div class="content">
+            <div class="ui form">
+                <div class="ui input fluid">
+                    <input type="text" placeholder="Product Name" id="editPdtName">
+                </div><br>
+                <div class="ui input fluid">
+                    <input type="text" placeholder="Price" id="editPdtPrice">
+                </div><br>
+                <div class="ui input fluid">
+                    <input type="text" placeholder="Qty" id="editPdtQty">
+                </div>
+                <div class="ui success message">
+                    <p>Product Saved</p>
+                </div>
+                <div class="ui error message">
+                    <p>Error: <span></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="ui button deny red" id="btnCloseEditPdtModal">Close</button>
+            <button class="ui button green saveProductEdit" id="">Save</button>
+        </div>
+    </div>
+
+    <!-- Adding New User Modal -->
+    <div class="ui modal small" id="addNewUserModal">
+        <div class="header">
+            Create New User
+        </div>
+        <div class="content">
+            <div class="ui form">
+                <div class="field">
+                    <label>Fullname</label>
+                    <input type="text" placeholder="Fullname" id="newUserFullname">
+                </div>
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" placeholder="Username" id="newUserUsername">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="text" placeholder="Password" id="newUserPassword">
+                </div>
+                <div class="field">
+                    <label>Role</label>
+                    <select class="ui dropdown" id="newUserRole">
+                        <option value="">Role</option>
+                        <option value="admin">admin</option>
+                        <option value="user">user</option>
+                    </select>
+                </div>
+                <div class="ui success message">
+                    <p>User Created!</p>
+                </div>
+                <div class="ui error message">
+                    <p>Error: <span></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="ui deny button red" id="btnCancelNewUser">Close</button>
+            <button class="ui button green" id="btnSaveNewUser">Save</button>
+        </div>
+    </div>
+
+    <!-- Editing User Modal -->
+    <div class="ui modal small" id="editUserModal">
+        <div class="header">
+            Edit User
+        </div>
+        <div class="content">
+            <div class="ui form">
+                <div class="field">
+                    <label>Fullname</label>
+                    <div class="ui input fluid">
+                        <input type="text" placeholder="Fullname" id="editUserFullname">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Username</label>
+                    <div class="ui input fluid">
+                        <input type="text" placeholder="Price" id="editUserUsername">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <div class="ui input fluid">
+                        <input type="text" placeholder="Password" id="editUserPassword">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Role</label>
+                    <select class="ui dropdown" id="editUserRole">
+                        <option value="">Role</option>
+                        <option value="admin">admin</option>
+                        <option value="user">user</option>
+                    </select>
+                </div>
+                <div class="ui success message">
+                    <p>User Saved</p>
+                </div>
+                <div class="ui error message">
+                    <p>Error: <span></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="ui button deny red" id="btnCloseEditModal">Close</button>
+            <button class="ui button green saveUserEdit" id="">Save</button>
         </div>
     </div>
 
