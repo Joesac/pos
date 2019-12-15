@@ -21,7 +21,7 @@ ipc.on('print-automatically', (evt, data) => {
         dataToAppend += `<tr><td>${item.name}</td>`
         dataToAppend += `<td>${item.qty}</td>`
         dataToAppend += `<td>${item.price}</td>`
-        dataToAppend += `<td>${amount}</td></tr>`
+        dataToAppend += `<td>${amount.toFixed(2)}</td></tr>`
     }
     tbodyProducts.html(dataToAppend)
     
