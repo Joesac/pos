@@ -85,8 +85,10 @@ app.post("/product", async (req, res) => {
 // Insert Checkout
 app.post("/checkout", async (req, res) => {
   try {
-    const checkout = new Checkout({ sale: req.body });
-    const newCheckout = await checkout.save();
+    let numOfCheckouts = await Checkout.estimatedDocumentCount()
+    req.body.receiptNumber = numOfCheckouts + 1
+    const checkout = new Checkout({ sale: req.body })
+    const newCheckout = await checkout.save()
     res.status(201).json(newCheckout);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -105,6 +107,17 @@ app.post("/user", async (req, res) => {
   }
 });
 
+// Login
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body
+  try {
+    const loggedInUser = await User.findOne({username: { $regex: `^${username}`, $options: 'ig' }, password: password})
+    res.json(loggedInUser)
+  } catch(err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 // READ
 // Get all products
 app.get("/products", async (req, res) => {
@@ -116,6 +129,7 @@ app.get("/products", async (req, res) => {
   }
 });
 
+// Search for product
 app.get("/search/products/", async (req, res) => {
   searchTerm = req.query.searchTerm;
 
@@ -128,6 +142,20 @@ app.get("/search/products/", async (req, res) => {
     res.status(500).json({ message: "Error in retrieving Searched Data" });
   }
 });
+
+// Search for user
+app.get("/search/users", async (req, res) => {
+  searchTerm = req.query.searchTerm;
+
+  try {
+    const searchedRes = await User.find({
+      fullname: { $regex: `${searchTerm}`, $options: "ig" }
+    });
+    res.json(searchedRes);
+  } catch (err) {
+    res.status(500).json({ message: "Error in retrieving Searched Data" });
+  }
+})
 
 // Get a Product
 app.get("/products/:id", getProduct, (req, res) => {

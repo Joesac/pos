@@ -15,7 +15,28 @@
 }
 
 .hide {
-    display: none;
+    display: none !important;
+}
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #374DC7;
+  z-index: 500;
+
+  .login-form-wrapper {
+    width: 400px;
+    // height: 250px;
+    background: white;
+    box-shadow: 0 0 20px rgba(34, 36, 38, 0.15);
+    padding: calc(var(--default-spacing) * 2);
+  }
 }
 
 #printCheckoutReceiptModal {
@@ -39,8 +60,9 @@
   padding: var(--default-spacing);
   background-color: #1b1c1d;
   color: white;
-  height: var(--topbar-height);
+  // height: var(--topbar-height);
   display: flex;
+  align-items: center;
 
   .app-name {
     font-size: 1.2rem;
@@ -54,6 +76,8 @@
     .user {
       padding-left: var(--default-spacing);
       padding-right: var(--default-spacing);
+      display: flex;
+      align-items: center;
     }
   }
 }
@@ -101,10 +125,6 @@
                 height: calc(100vh - 200px);
                 // max-height: 500px;
             }
-        }
-
-        .search-bar {
-            width: 100%;
         }
     }
 

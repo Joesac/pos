@@ -13,15 +13,41 @@
 
 <body>
 
+    <div class="login-page">
+        <div class="login-form-wrapper">
+            <div class="ui form">
+                <h3>Sign In</h3>
+                <div class="field">
+                    <label>Username</label>
+                    <input placeholder="Username" type="text" id="txtloginUsername">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input placeholder="Password" type="password" id="txtLoginPassword">
+                </div>
+                <div class="ui button fluid" id="btnLogin">Log In</div>
+                <div class="ui success message">
+                    <p>Success. Loging in...</p>
+                </div>
+                <div class="ui error message">
+                    <p>Username or password incorrect</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="ui sidebar inverted vertical menu">
         <a class="item" id="btnMenuSell">
-            SELL
+            <i class="money bill alternate outline icon"></i>SELL
         </a>
         <a class="item" id="btnMenuUser">
             <i class="icon user"></i> USERS
         </a>
         <a class="item" id="btnMenuProduct">
-            PRODUCT
+            <i class="icon product hunt"></i>PRODUCT
+        </a>
+        <a class="item" id="btnMenuReport">
+            <i class="icon chart bar outline"></i>REPORT
         </a>
     </div>
     <div class="ui top fixed menu">
@@ -31,8 +57,11 @@
             <div class="widgets">
                 <div class="timestamp">2:15pm</div>
                 <div class="user">
-                    <i class="user icon"></i> Joesac
+                    <i class="user icon"></i> <span id="displayUsername"></span>
                 </div>
+                <button class="ui button mini" id="btnLogout">
+                    Logout
+                </button>
             </div>
         </div>
     </div>
@@ -41,11 +70,9 @@
             <div class="user-page inner-page hide">
                 <h2>Users</h2>
                 <button class="ui button blue btnCreateNew" id="btnCreateNewUser">Create New User</button>
-                <div class="search-bar">
-                    <div class="ui fluid input icon">
-                        <input type="text" id="txtUserSearch" placeholder="Search User">
-                        <i class="icon search"></i>
-                    </div>
+                <div class="ui fluid input icon">
+                    <input type="text" id="txtUserSearch" placeholder="Search User">
+                    <i class="icon search"></i>
                 </div>
                 <div class="user-list-container">
                     <table class="ui compact table selectable" id="tblUsersList">
@@ -143,8 +170,13 @@
             Cash Received
         </div>
         <div class="content">
-            <div class="ui input big fluid">
-                <input type="text" id="txtAmountReceived" placeholder="GHC0.00" style="text-align: right;">
+            <div class="ui form">
+                <div class="ui input big fluid">
+                    <input type="text" id="txtAmountReceived" placeholder="GHC0.00" style="text-align: right;">
+                </div>
+                <div class="ui error message">
+                    <p>Amount paid is smaller than amount due</p>
+                </div>
             </div>
         </div>
         <div class="actions">
@@ -159,9 +191,12 @@
             Print Receipt?
         </div>
         <div class="image content">
-            <button class="ui button green massive" id="btnPrintReceipt">Print</button>
-            <button class="ui button deny red massive" id="btnClosePrintReceiptModal">Cancel</button>
+            <div class="actions">
+                <button class="ui button green massive" id="btnPrintReceipt">Print</button>
+                <button class="ui button deny red massive" id="btnClosePrintReceiptModal">Cancel</button>
+            </div>
         </div>
+
     </div>
 
     <!-- Adding New Product Modal -->

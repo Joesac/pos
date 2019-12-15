@@ -62,3 +62,7 @@ ipc.on('begin-print', (evt, data) => {
   const win = BrowserWindow.fromWebContents(evt.sender)
   win.webContents.print({silent: true})
 })
+
+ipc.on('isLoggedIn', (evt) => {
+  evt.sender.send('isLoggedInBoolean')
+})

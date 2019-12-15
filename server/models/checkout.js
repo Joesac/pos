@@ -10,6 +10,12 @@ const CheckoutSchema = new mongoose.Schema({
         default: Date.now
     },
     sale: {
+        receiptNumber: {
+            type: Number
+        },
+        seller: {
+            type: String
+        },
         amountReceived: {
             type: Number
         },

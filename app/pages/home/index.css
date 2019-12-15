@@ -15,7 +15,27 @@
 }
 
 .hide {
-  display: none;
+  display: none !important;
+}
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #374DC7;
+  z-index: 500;
+}
+
+.login-page .login-form-wrapper {
+  width: 400px;
+  background: white;
+  box-shadow: 0 0 20px rgba(34, 36, 38, 0.15);
+  padding: calc(var(--default-spacing) * 2);
 }
 
 #printCheckoutReceiptModal .header {
@@ -37,8 +57,8 @@
   padding: var(--default-spacing);
   background-color: #1b1c1d;
   color: white;
-  height: var(--topbar-height);
   display: flex;
+  align-items: center;
 }
 
 .topbar .app-name {
@@ -54,6 +74,8 @@
 .topbar .widgets .user {
   padding-left: var(--default-spacing);
   padding-right: var(--default-spacing);
+  display: flex;
+  align-items: center;
 }
 
 .app-container {
@@ -93,10 +115,6 @@
   display: flex;
   overflow-y: auto;
   height: calc(100vh - 200px);
-}
-
-.app-container .inner-page .search-bar {
-  width: 100%;
 }
 
 .app-container .products-current-sale-container {

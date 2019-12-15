@@ -27,6 +27,74 @@ const productPage = $(".product-page");
 
 let productsArrayTempStore = [];
 
+/** LOGIN SCRIPT  */
+const loginPage = $(".login-page")
+const loginFormWrapper = $(".login-form-wrapper")
+const loginForm = loginFormWrapper.find(".form")
+const btnLogin = $("#btnLogin")
+const txtLoginUsername = $("#txtloginUsername")
+const txtLoginPassword = $("#txtLoginPassword")
+const displayUsername = $("#displayUsername")
+const btnLogout = $("#btnLogout")
+btnLogin.click(function() {
+  loginForm.removeClass("success error").addClass("loading")
+  Login(txtLoginUsername.val().trim(), txtLoginPassword.val().trim())
+})
+
+// Hiding the success or error message on typing in the textboxes
+loginForm.find("input").keyup(function() {
+  loginForm.removeClass("success error")
+})
+
+// Check if logged in
+ipc.send("isLoggedIn")
+
+ipc.on("isLoggedInBoolean", (evt, data) => {
+  if (!!localStorage.getItem("loggedInUserData")) {
+    displayUsername.text(getUsername())
+    loginPage.addClass("hide")
+  }
+})
+
+function Login(username, password) {
+  let loginDetails = { username: username, password: password }
+  $.ajax({
+    type: 'POST',
+    contentType: 'application/json',
+    url: `${base_url}/login`,
+    data: JSON.stringify(loginDetails),
+    dataType: 'json',
+    success: function(res) {
+      if (res != null) {
+        localStorage.setItem('loggedInUserData', JSON.stringify(res))
+        displayUsername.text(getUsername())
+        loginPage.addClass("hide")
+        txtLoginUsername.val("")
+        txtLoginPassword.val("")
+        return
+      }
+      loginForm.addClass("error")
+    },
+    error: function(err) {
+      console.log(err.message)
+      loginForm.addClass("error")
+    },
+    complete: function() {
+      loginForm.removeClass("loading")
+    }
+  })  
+}
+
+function getUsername() {
+  return JSON.parse(localStorage.getItem("loggedInUserData")).username
+}
+
+btnLogout.click(function() {
+  localStorage.removeItem("loggedInUserData")
+  loginPage.removeClass("hide")
+})
+/** END LOGIN SCRIPT */
+
 // Showing Clock
 setInterval(function() {
   timestamp.text(clock());
@@ -117,6 +185,7 @@ const editUserFullname = $("#editUserFullname");
 const editUserUsername = $("#editUserUsername");
 const editUserPassword = $("#editUserPassword");
 const editUserRole = $("#editUserRole")
+const saveUserEdit = $(".saveUserEdit")
 tblUsersListTbody.on("click", "tr", function() {
   const $this = $(this);
   selectedUserObj.id = $this.attr("id");
@@ -125,26 +194,25 @@ tblUsersListTbody.on("click", "tr", function() {
   selectedUserObj.password = $this.children("td:nth-child(3)").text();
   selectedUserObj.role = $this.children("td:nth-child(4)").text();
 
-  saveProductEdit.attr("id", `save_${selectedUserObj.id}`);
+  saveUserEdit.attr("id", `save_${selectedUserObj.id}`);
   editUserFullname.val(selectedUserObj.fullname);
   editUserUsername.val(selectedUserObj.username);
   editUserPassword.val(selectedUserObj.password);
-  editUserRole.val(selectedUserObj.role);
+  editUserRole.dropdown(`set selected`,selectedUserObj.role);
   editUserModal.modal({closable: false}).modal("show");
 });
 
 // Saving Edited User
-const saveUserEdit = $(".saveUserEdit")
 saveUserEdit.click(function() {
   let fn = editUserFullname.val().trim(),
     us = editUserUsername.val().trim(),
-    ps = editUserUsername.val().trim(),
+    ps = editUserPassword.val().trim(),
     rl = editUserRole.dropdown("get value").trim()
-  $this = $(this)
+    $this = $(this)
   if (fn == "" ||  us == "" || ps == "" || rl == "") {
     return
   }
-
+  
   editUserModal.find('.form').addClass('loading')
   $this.addClass('loading')
 
@@ -160,13 +228,13 @@ saveUserEdit.click(function() {
     data: JSON.stringify(selectedUserObj),
     dataType: "json",
     success: function(res) {
+      console.log(res)
       let formattedId = $this.attr('id').split("_")[1]
       let row = tblUsersListTbody.find(`tr#${formattedId}`)
-
-      row.children("td:nth-child(1)").text(editPdtName.val())
-      row.children("td:nth-child(2)").text(editPdtPrice.val())
-      row.children("td:nth-child(3)").text(editPdtQty.val())
-      row.children("td:nth-child(3)").text(editPdtQty.val())
+      row.children("td:nth-child(1)").text(fn)
+      row.children("td:nth-child(2)").text(us)
+      row.children("td:nth-child(3)").text(ps)
+      row.children("td:nth-child(4)").text(rl)
       editUserModal.find('.form').addClass('success')
     },
     error: function(err) {
@@ -178,6 +246,43 @@ saveUserEdit.click(function() {
     }
   });
 });
+
+// Hidding either success or error message when typing in any of the add create new User textboxes
+$("#newUserFullname, #newUserUsername, #newUserPassword").keydown(function() {
+  addNewUserModal.find('.form').removeClass('error success')
+})
+$("#newUserRole").dropdown({
+  onChange: function() {
+    addNewUserModal.find('.form').removeClass('error success')
+  }
+})
+
+// Hidding either success or error message when typing in any of the Edit User textboxes
+$("#editUserFullname, #editUserUsername, #editUserPassword").keydown(function() {
+  editUserModal.find('.form').removeClass('error success')
+})
+$("#editUserRole").dropdown({
+  onChange: function() {
+    editUserModal.find('.form').removeClass('error success')
+  }
+})
+
+// Searching for a User on User Page
+$("#txtUserSearch").keyup(function() {
+  let allUsers = "",
+    searchTerm = $(this).val().trim();
+
+  $.get(`${base_url}/search/users`, { searchTerm }, resData => {
+    if (!resData.length) {
+      allUsers = resData
+    } else {
+      for (i = 0; i < resData.length; i++) {
+        allUsers += `<tr id="${resData[i]._id}"><td>${resData[i].fullname}</td><td>${resData[i].username}</td><td>${resData[i].password}</td><td>${resData[i].role}</td></tr>`;
+      }
+    }
+    tblUsersListTbody.html(allUsers);
+  });
+})
 
 // Showing Product Page
 const tblProductsListTbody = $("#tblProductsList tbody");
@@ -260,7 +365,7 @@ btnCloseEditPdtModal.click(function() {
   editProductModal.modal("close")
 })
 
-// Hidding either success or error message when typing in any of the add create new textboxes
+// Hidding either success or error message when typing in any of the add or create new product textboxes
 $("#editPdtName, #editPdtPrice, #editPdtQty").keydown(function() {
   editProductModal.find('.form').removeClass('error success')
 })
@@ -378,24 +483,21 @@ displaySearchResultsWrapper.on("click", ".product-item", function() {
   let rowId = `pdt_${productsArrayTempStore[id]._id}`;
   if (checkCartContainsProduct(rowId)) {
     cart.find(`tr#${rowId}`).addClass("red");
-    return;
+  } else {
+    cart.find(`tr`).removeClass("red");
+
+    productToAppend += `<tr id="${rowId}"><td>${productsArrayTempStore[id].name}</td><td>`;
+    productToAppend +=
+      '<div class="ui mini input"><input type="text" value="1" class="pdt-item-qty"></div>';
+    productToAppend += `</td><td class="pdt-item-price">${productsArrayTempStore[id].price}</td><td class="pdt-item-total">${productsArrayTempStore[id].price}</td><td>`;
+    productToAppend += `<button class="ui circular google plus icon button trash-btn"><i id="trush_${productsArrayTempStore[id]._id}" class="icon trash alternate outline"></i></button>`;
+    productToAppend += "</td></tr>";
+    cart.find("tbody").append(productToAppend);
+
+    let tds = tblCart.find("td.pdt-item-total");
+    let sumTotal = sumAllCartItems(tds);
+    totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(sumTotal.toFixed(2)));
   }
-  cart.find(`tr`).removeClass("red");
-
-  productToAppend += `<tr id="${rowId}"><td>${productsArrayTempStore[id].name}</td><td>`;
-  productToAppend +=
-    '<div class="ui mini input"><input type="text" value="1" class="pdt-item-qty"></div>';
-  productToAppend += `</td><td class="pdt-item-price">${productsArrayTempStore[id].price}</td><td class="pdt-item-total">${productsArrayTempStore[id].price}</td><td>`;
-  productToAppend += `<button class="ui circular google plus icon button trash-btn"><i id="trush_${productsArrayTempStore[id]._id}" class="icon trash alternate outline"></i></button>`;
-  productToAppend += "</td></tr>";
-  cart.find("tbody").append(productToAppend);
-
-  let tds = tblCart.find("td.pdt-item-total");
-  let sumTotal = sumAllCartItems(tds);
-  totalVal
-    .children("h3")
-    .text("GHC" + formatNumberToCurrencyFormat(sumTotal.toFixed(2)));
-
   // Set forcus to the searchbox
   txtSearch.focus();
 });
@@ -453,27 +555,28 @@ tblCart.on("click", ".trash-btn", function() {
 // Clicking on Cash Charge Button
 btnChargeCash.on("click", function() {
   amountCustomerPaidModal
-    .modal({ transition: "horizontal flip", closable: false })
+    .modal({ closable: false })
     .modal("show");
 });
 
 // Cancel Cash Charge Modal
 btnCancelAmountCustomerPaidModal.click(function() {
   amountCustomerPaidModal.modal("close");
-  console.log("k");
 });
 
 // Charging by Cash
 let productsResData;
 btnCheckoutAmountCustomerPaid.on("click", function() {
-  if (Number(txtAmountReceived.val() - Number(totalVal.text()) < 0)) {
-    alert("Amount received is smaller than amount Due");
+  if (Number(txtAmountReceived.val().replace(",","") - Number(totalVal.children('h3').text().split("GHC")[1].replace(",","")) < 0)) {
+    txtAmountReceived.closest(".form").addClass('error')
+    txtAmountReceived.val("")
     return false;
   }
-
+  
   let allProductsDetails = tblCart.find("tbody tr");
   let productsPurchasedArray = [];
   let dataToSend = {};
+  txtAmountReceived.closest(".form").removeClass('error')
 
   $.each(allProductsDetails, function(index, item) {
     let tds = $(this).children("td"),
@@ -489,6 +592,8 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
 
   dataToSend.products = productsPurchasedArray;
   dataToSend.amountReceived = txtAmountReceived.val();
+  dataToSend.seller = displayUsername.text();
+  dataToSend.receiptNumber = 0;
   dataToSend.paymentType = "cash";
 
   $.ajax({
@@ -498,11 +603,8 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
     data: JSON.stringify(dataToSend),
     dataType: "json",
     success: function(res) {
-      console.log(res);
       productsResData = res;
-      printCheckoutReceiptModal
-        .modal({ transition: "horizontal flip", closable: false })
-        .modal("show");
+      printCheckoutReceiptModal.modal({ closable: false }).modal("show");
     },
     error: function(e) {
       alert(e.message);
@@ -512,8 +614,6 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
 
 // Printing Receipt
 btnPrintReceipt.click(function() {
-  console.log("Printing receipt...");
-  console.log(cart, totalContainer, txtAmountReceived.val());
   data = {};
   printCheckoutReceiptModal.modal("close");
 
@@ -531,6 +631,7 @@ btnNew.click(function() {
 // Hiding Print Receipt Modal
 btnClosePrintReceiptModal.click(function() {
   printCheckoutReceiptModal.modal("close");
+  txtAmountReceived.val("")
 });
 
 // Functions

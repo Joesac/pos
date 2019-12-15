@@ -6,6 +6,8 @@ const totalVal = $("#totalVal")
 const amountReceived = $(".amountReceived")
 const changeGiven = $(".changeGiven")
 const timeStamp = $("#timestamp")
+const user = $("#user")
+const billNo = $("#billNo")
 
 
 ipc.on('print-automatically', (evt, data) => {
@@ -22,11 +24,15 @@ ipc.on('print-automatically', (evt, data) => {
         dataToAppend += `<td>${amount}</td></tr>`
     }
     tbodyProducts.html(dataToAppend)
-    totalVal.empty().append(sumTotal)
-    amountReceived.text(sale.amountReceived)
-    changeGiven.text(Number(sale.amountReceived) - Number(sumTotal))
-    timeStamp.text(convertTimeStampToHRT(data.timestamp) )
+    
+    totalVal.empty().append(sumTotal.toFixed(2))
+    amountReceived.text(sale.amountReceived.toFixed(2))
+    changeGiven.text((Number(sale.amountReceived) - Number(sumTotal)).toFixed(2))
+    user.text(sale.seller)
+    billNo.text(sale.receiptNumber)
+    timeStamp.text(convertTimeStampToHRT(data.timestamp))
 
+    console.log(amountReceived.text(), changeGiven.text())
 
     ipc.send("begin-print", data)
 })
