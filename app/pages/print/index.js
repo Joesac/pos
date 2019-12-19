@@ -40,8 +40,8 @@ ipc.on('print-automatically', (evt, data) => {
 // Functions
 function convertTimeStampToHRT(timestamp) {
     today = new Date(timestamp)
-    var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
-    var time = showAMPM(today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
+    let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+    let time = showAMPM(today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
     return date+' '+time;
 }
 

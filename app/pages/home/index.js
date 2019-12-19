@@ -7,7 +7,6 @@ const cart = $(".cart");
 const tblCart = $("#tblCart");
 const totalVal = $("#totalVal");
 const btnChargeCash = $("#btnChargeCash");
-const printCheckoutReceiptModal = $("#printCheckoutReceiptModal");
 const amountCustomerPaidModal = $("#amountCustomerPaidModal");
 const btnCancelAmountCustomerPaidModal = $("#btnCancelAmountCustomerPaidModal");
 const btnCheckoutAmountCustomerPaid = $("#btnCheckoutAmountCustomerPaid");
@@ -18,12 +17,17 @@ const btnClosePrintReceiptModal = $("#btnClosePrintReceiptModal");
 const txtAmountReceived = $("#txtAmountReceived");
 const btnNew = $("#btnNew");
 const iconMenu = $("#iconMenu");
+const menuBars = $("#menuBars");
 const btnMenuUser = $("#btnMenuUser");
 const btnMenuProduct = $("#btnMenuProduct");
+const btnMenuReport = $("#btnMenuReport");
+const btnMenuReceipt = $("#btnMenuReceipt");
 const sideBarMenuItem = $(".ui .item");
 const innerPage = $(".inner-page");
 const userPage = $(".user-page");
 const productPage = $(".product-page");
+const reportPage = $(".report-page");
+const receiptPage = $(".receipt-page");
 
 let productsArrayTempStore = [];
 
@@ -54,6 +58,8 @@ ipc.on("isLoggedInBoolean", (evt, data) => {
     displayUsername.text(getUsername())
     loginPage.addClass("hide")
   }
+
+  hideShowMenuBars(getRole())
 })
 
 function Login(username, password) {
@@ -71,12 +77,12 @@ function Login(username, password) {
         loginPage.addClass("hide")
         txtLoginUsername.val("")
         txtLoginPassword.val("")
+        hideShowMenuBars(getRole())
         return
       }
       loginForm.addClass("error")
     },
     error: function(err) {
-      console.log(err.message)
       loginForm.addClass("error")
     },
     complete: function() {
@@ -89,11 +95,230 @@ function getUsername() {
   return JSON.parse(localStorage.getItem("loggedInUserData")).username
 }
 
+function getRole() {
+  return JSON.parse(localStorage.getItem("loggedInUserData")).role
+}
+
+function hideShowMenuBars(role) {
+  if (getRole() != 'admin') {
+    menuBars.addClass("hide")
+  } else {
+    menuBars.removeClass("hide")
+  }
+}
+
 btnLogout.click(function() {
   localStorage.removeItem("loggedInUserData")
   loginPage.removeClass("hide")
+  innerPage.addClass("hide")
 })
 /** END LOGIN SCRIPT */
+
+/** REPORT PAGE */
+const reportDisplayContainer = $(".report-display-container")
+const btnSearchReport = $("#btnSearchReport")
+const dt = $("#dt")
+const df = $("#df")
+const tblProductsSoldListTbody = $("#tblProductsSoldList tbody")
+const btnPrintReceiptOnPlatform = $("#btnPrintReceiptOnPlatform")
+
+// Initialize date picker
+$('#df').calendar({
+  type: 'date',
+  endCalendar: dt
+});
+
+$('#dt').calendar({
+  type: 'date',
+  startCalendar: df 
+});
+
+btnMenuReport.click(function() {
+  innerPage.addClass("hide");
+  reportPage.removeClass("hide");
+})
+
+btnSearchReport.click(function() {
+  $.ajax({
+    type: 'POST',
+    dataType: 'json',
+    url: `${base_url}/report/search`,
+    data: JSON.stringify({df: df.find("input").val(), dt: dt.find("input").val()}),
+    contentType: 'application/json',
+    success: function(res) {
+      let pdsAndQuantitiesSold = calculate(filterSales(res))
+      let allPdtsSold;
+      for (i = 0; i < pdsAndQuantitiesSold.length; i++) {
+        allPdtsSold += `<tr><td>${pdsAndQuantitiesSold[i].pdt.element.name}</td><td>${pdsAndQuantitiesSold[i].pdt.qtyAccumulator}</td><td>GHC${ formatNumberToCurrencyFormat((pdsAndQuantitiesSold[i].pdt.element.price * pdsAndQuantitiesSold[i].pdt.qtyAccumulator).toFixed(2)) }</td></tr>`;
+      }
+      tblProductsSoldListTbody.html(allPdtsSold);
+    },
+    error: function(err) {
+      console.log(err.message)
+    },
+    complete: function() {
+
+    }
+  })
+})
+
+function filterSales(saleO) {
+  let filteredProducts = []
+
+  for (let i = 0; i < saleO.length; i++) {
+    const element = saleO[i];
+    for (let j = 0; j < element.sale.products.length; j++) {
+      const salePdts = element.sale.products[j];
+      salePdts.date = element.dateAdded
+      filteredProducts.push(salePdts)
+    }
+  }
+  sortedProductsObjs = filteredProducts.sort(compare)
+  return sortedProductsObjs
+}
+
+function calculate(sortedProductsObjs) {
+  let qtyAccumulator = 0
+  let revisedPdtAryObj = []
+  let justCounted = ''
+  
+  for (let i = 0; i < sortedProductsObjs.length; i++) {
+    const element = sortedProductsObjs[i];
+    if (justCounted == element.name) continue
+    let revisedPdtsObj = {}
+    
+    for (let j = i; j < sortedProductsObjs.length; j++) {
+      const item = sortedProductsObjs[j];
+      if (item.name == element.name) {
+        qtyAccumulator += sortedProductsObjs[j].qty
+      }
+    }
+    
+    revisedPdtsObj.pdt = {element, qtyAccumulator}
+    revisedPdtAryObj.push(revisedPdtsObj)
+    justCounted = element.name
+    qtyAccumulator = 0
+  }
+  return revisedPdtAryObj
+}
+
+function compare(a, b) {
+  const productsObjA = a.name.toUpperCase();
+  const productsObjB = b.name.toUpperCase();
+
+  let comparison = 0;
+  if (productsObjA > productsObjB) {
+    comparison = 1;
+  } else if (productsObjA < productsObjB) {
+    comparison = -1;
+  }
+  return comparison;
+}
+/** END REPORT */
+
+/** RECEIPT PAGE */
+const searchContainer = $(".search-container")
+const receiptDF = $("#receiptDf")
+const btnSearchReceipt = $("#btnSearchReceipt")
+const listOfReceipts = $(".list-of-receipts")
+receiptDF.calendar({
+  type: 'date'
+})
+
+btnMenuReceipt.click(function() {
+  innerPage.addClass("hide");
+  receiptPage.removeClass("hide");
+})
+
+let retrievedCheckouts = []
+let receiptCurrentlyViewed = []
+btnSearchReceipt.click(function() {
+  $.ajax({
+    type: 'GET',
+    dataType: 'json',
+    url: `${base_url}/receipt-numbers/${searchContainer.find("input").val()}`,
+    contentType: 'application/json',
+    success: function(res) {
+      retrievedCheckouts = res
+      let receiptDates = ''
+      let date;
+      for (let i = 0; i < res.length; i++) {
+        date = new Date(res[i].timestamp)
+        let dt = date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear()
+        var time = showAMPM(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
+        receiptDates += `<div class="receiptTimestamps" id='${res[i].timestamp}'>${dt} ${time}</div>`
+      }
+      listOfReceipts.html(receiptDates)
+    },
+    error: function(err) {
+      console.log(err.message)
+    },
+    complete: function() {
+
+    }
+  })
+})
+
+// Clicking on each of the receipt dates
+listOfReceipts.on("click", ".receiptTimestamps", function() {
+  if (!retrievedCheckouts.length) return
+
+  let $this = $(this)
+  let id = $this.attr('id')
+  let foundCheckout;
+
+  $this.addClass('selected').siblings().removeClass('selected')
+
+  for (let i = 0; i < retrievedCheckouts.length; i++) {
+    if (retrievedCheckouts[i].timestamp == id) {
+      foundCheckout = retrievedCheckouts[i]
+      receiptCurrentlyViewed = foundCheckout
+      i = retrievedCheckouts.length
+    }
+  }
+  
+    const tbodyProducts = $(".table-checkout-products tbody")
+    let dataToAppend = '';
+    let sumTotal = 0;
+    let sale = foundCheckout.sale;
+    const totalVal = $("#ReceiptTotalVal")
+    const amountReceived = $(".amountReceived")
+    const changeGiven = $(".changeGiven")
+    const timeStamp = $("#timestamp")
+    const user = $("#user")
+    const billNo = $("#billNo")
+    
+    for (let i = 0; i < sale.products.length; i++) {
+        const item = sale.products[i];
+        let amount = item.price * item.qty
+        sumTotal += amount
+        dataToAppend += `<tr><td>${item.name}</td>`
+        dataToAppend += `<td>${item.qty}</td>`
+        dataToAppend += `<td>${item.price}</td>`
+        dataToAppend += `<td>${amount.toFixed(2)}</td></tr>`
+    }
+    tbodyProducts.html(dataToAppend)
+    totalVal.empty().append(sumTotal.toFixed(2))
+    amountReceived.text(sale.amountReceived.toFixed(2))
+    changeGiven.text((Number(sale.amountReceived) - Number(sumTotal)).toFixed(2))
+    user.text(sale.seller)
+    billNo.text(sale.receiptNumber)
+    timeStamp.text(convertTimeStampToHRT(foundCheckout.timestamp))
+
+})
+
+const actualReceiptPlatform = $(".actual-receipt-platform")
+btnPrintReceiptOnPlatform.click(function() {
+  ipc.send("prepare-receipt-print", receiptCurrentlyViewed);
+})
+
+function convertTimeStampToHRT(timestamp) {
+  today = new Date(timestamp)
+  let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+  let time = showAMPM(today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds());
+  return date+' '+time;
+}
+/** END RECEIPT PAGE */
 
 // Showing Clock
 setInterval(function() {
@@ -101,18 +326,18 @@ setInterval(function() {
 }, 1000);
 
 // Show sidebar
-iconMenu.click(function() {
+menuBars.click(function() {
   $(".sidebar").sidebar("toggle");
 });
 
 sideBarMenuItem.click(function() {
-  innerPage.addClass("hide");
   $(".sidebar").sidebar("toggle");
 });
 
 // Showing User Page
 const tblUsersListTbody = $("#tblUsersList tbody");
 btnMenuUser.click(function() {
+  innerPage.addClass("hide");
   userPage.removeClass("hide");
   let allUsers = "";
   $.get(`${base_url}/users`, resData => {
@@ -159,7 +384,6 @@ btnSaveNewUser.click(function() {
     data: JSON.stringify(newUserObj),
     dataType: 'json',
     success: function(res) {
-      console.log(res)
       addNewUserModal.find('.form').removeClass('error').addClass('success')
     },
     error: function(err) {
@@ -228,7 +452,6 @@ saveUserEdit.click(function() {
     data: JSON.stringify(selectedUserObj),
     dataType: "json",
     success: function(res) {
-      console.log(res)
       let formattedId = $this.attr('id').split("_")[1]
       let row = tblUsersListTbody.find(`tr#${formattedId}`)
       row.children("td:nth-child(1)").text(fn)
@@ -287,12 +510,17 @@ $("#txtUserSearch").keyup(function() {
 // Showing Product Page
 const tblProductsListTbody = $("#tblProductsList tbody");
 btnMenuProduct.click(function() {
+  innerPage.addClass("hide");
   productPage.removeClass("hide");
   let allProducts = "";
   $.get(`${base_url}/products`, resData => {
     if (resData.length) {
       for (i = 0; i < resData.length; i++) {
-        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>${resData[i].price}</td><td>${resData[i].qty}</td></tr>`;
+        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>${resData[i].price}</td><td>${resData[i].qty}</td><td`
+        if (resData[i].qty < resData[i].reorderLevel) {
+          allProducts += ` class="reorder-level-reached" `
+        }
+        allProducts += `>${resData[i].reorderLevel}</td></tr>`
       }
       tblProductsListTbody.html(allProducts);
     }
@@ -306,24 +534,27 @@ const saveProductEdit = $(".saveProductEdit")
 const editPdtName = $("#editPdtName");
 const editPdtPrice = $("#editPdtPrice");
 const editPdtQty = $("#editPdtQty");
+const editPdtReorderLevel = $("#editPdtReorderLevel");
 tblProductsListTbody.on("click", "tr", function() {
   const $this = $(this);
   selectedProductObj.id = $this.attr("id");
   selectedProductObj.name = $this.children("td:nth-child(1)").text();
   selectedProductObj.price = $this.children("td:nth-child(2)").text();
   selectedProductObj.qty = $this.children("td:nth-child(3)").text();
+  selectedProductObj.reorderLevel = $this.children("td:nth-child(4)").text();
 
   saveProductEdit.attr("id", `save_${selectedProductObj.id}`);
   editPdtName.val(selectedProductObj.name);
   editPdtPrice.val(selectedProductObj.price);
   editPdtQty.val(selectedProductObj.qty);
+  editPdtReorderLevel.val(selectedProductObj.reorderLevel);
   editProductModal.modal({closable: false}).modal("show");
 });
 
 // Saving Edited Product
 saveProductEdit.click(function() {
   $this = $(this)
-  if (editPdtName.val() == "" ||  editPdtPrice.val() == "" || editPdtQty.val() == "") {
+  if (editPdtName.val() == "" ||  editPdtPrice.val() == "" || editPdtQty.val() == "" || editPdtReorderLevel.val() == "") {
     return
   }
 
@@ -333,6 +564,7 @@ saveProductEdit.click(function() {
   selectedProductObj.name = editPdtName.val();
   selectedProductObj.price = editPdtPrice.val();
   selectedProductObj.qty = editPdtQty.val();
+  selectedProductObj.reorderLevel = editPdtReorderLevel.val();
 
   $.ajax({
     type: "POST",
@@ -347,6 +579,7 @@ saveProductEdit.click(function() {
       pdtRow.children("td:nth-child(1)").text(editPdtName.val())
       pdtRow.children("td:nth-child(2)").text(editPdtPrice.val())
       pdtRow.children("td:nth-child(3)").text(editPdtQty.val())
+      pdtRow.children("td:nth-child(4)").text(editPdtReorderLevel.val())
       editProductModal.find('.form').addClass('success')
     },
     error: function(err) {
@@ -375,6 +608,7 @@ const addNewProductModal = $("#addNewProductModal")
 const newPdtName = $("#newPdtName")
 const newPdtPrice = $("#newPdtPrice")
 const newPdtQty = $("#newPdtQty")
+const newPdtReorderLevel = $("#newPdtReorderLevel")
 let newProductObj = {}
 $("#btnCreateNewPdt").click(function() {
   addNewProductModal.modal('setting', 'closable', false).modal('show')
@@ -387,7 +621,7 @@ btnCancelNewProduct.click(function() {
 })
 
 // Hidding either success or error message when typing in any of the add create new textboxes
-$("#newPdtName, #newPdtPrice, #newPdtQty").keydown(function() {
+$("#newPdtName, #newPdtPrice, #newPdtQty, #newPdtReorderLevel").keydown(function() {
   addNewProductModal.find('.form').removeClass('error success')
 })
 
@@ -405,6 +639,7 @@ btnSaveNewProduct.click(function() {
   newProductObj.name = newPdtName.val().trim()
   newProductObj.price = newPdtPrice.val().trim()
   newProductObj.qty = newPdtQty.val().trim() || 0
+  newProductObj.reorderLevel = newPdtReorderLevel.val().trim()
 
   $.ajax({
     type: 'POST',
@@ -435,7 +670,11 @@ txtProductSearch.keyup(function() {
     if (resData.length) {
       productsArrayTempStore = resData;
       for (i = 0; i < resData.length; i++) {
-        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>${resData[i].price}</td><td>${resData[i].qty}</td></tr>`;
+        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>${resData[i].price}</td><td>${resData[i].qty}</td><td`
+        if (resData[i].qty < resData[i].reorderLevel) {
+          allProducts += ` class="reorder-level-reached" `
+        }
+        allProducts += `>${resData[i].reorderLevel}</td></tr>`
       }
       tblProductsListTbody.html(allProducts);
     }
@@ -565,9 +804,11 @@ btnCancelAmountCustomerPaidModal.click(function() {
 });
 
 // Charging by Cash
-let productsResData;
+const errorTextContainer = amountCustomerPaidModal.find("div.error")
 btnCheckoutAmountCustomerPaid.on("click", function() {
+  
   if (Number(txtAmountReceived.val().replace(",","") - Number(totalVal.children('h3').text().split("GHC")[1].replace(",","")) < 0)) {
+    errorTextContainer.html("<p>Amount paid is smaller than amount due</p>")
     txtAmountReceived.closest(".form").addClass('error')
     txtAmountReceived.val("")
     return false;
@@ -603,21 +844,19 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
     data: JSON.stringify(dataToSend),
     dataType: "json",
     success: function(res) {
-      productsResData = res;
-      printCheckoutReceiptModal.modal({ closable: false }).modal("show");
+      console.log(res)
+      if (res.lowerPdt) {
+        errorTextContainer.html(`<p>Available Quantity of ${res.lowerPdt[0].name} is less than what is requested to sell</p>`)
+        txtAmountReceived.closest(".form").addClass('error')
+        return
+      }
+      ipc.send("prepare-receipt-print", res);
+      amountCustomerPaidModal.modal("ok")
     },
     error: function(e) {
       alert(e.message);
     }
   });
-});
-
-// Printing Receipt
-btnPrintReceipt.click(function() {
-  data = {};
-  printCheckoutReceiptModal.modal("close");
-
-  ipc.send("prepare-receipt-print", productsResData);
 });
 
 // Clicking on new Sale Button
@@ -626,12 +865,6 @@ btnNew.click(function() {
   txtAmountReceived.val("");
   cart.find("tbody").empty();
   totalVal.children("h3").text("GHC0.00");
-});
-
-// Hiding Print Receipt Modal
-btnClosePrintReceiptModal.click(function() {
-  printCheckoutReceiptModal.modal("close");
-  txtAmountReceived.val("")
 });
 
 // Functions

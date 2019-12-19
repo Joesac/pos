@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>POS</title>
     <link rel="stylesheet" href="../../vendor/semantic-ui/semantic.min.css">
+    <link rel="stylesheet" href="../../vendor/semantic-ui/calendar.min.css">
     <link rel="stylesheet" href="../../styles/global.min.css">
     <link rel="stylesheet" href="./index.min.css">
 </head>
@@ -49,10 +50,13 @@
         <a class="item" id="btnMenuReport">
             <i class="icon chart bar outline"></i>REPORT
         </a>
+        <a class="item" id="btnMenuReceipt">
+            <i class="icon closed captioning outline"></i>RECEIPT
+        </a>
     </div>
     <div class="ui top fixed menu">
         <div class="topbar">
-            <div class="app-name" id="iconMenu"><i class="icon align justify"></i>TeleMart</div>
+            <div class="app-name" id="iconMenu"><i class="icon align justify" id="menuBars"></i>TeleMart</div>
             <div class="spacer"></div>
             <div class="widgets">
                 <div class="timestamp">2:15pm</div>
@@ -103,6 +107,7 @@
                                 <th>Name</th>
                                 <th>Price</th>
                                 <th>Qty</th>
+                                <th>Reorder Level</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,7 +115,143 @@
                     </table>
                 </div>
             </div>
+            <div class="report-page inner-page hide">
+                <h2>Report</h2>
+                <div class="report-inner-page-container">
+                    <div class="report-dates-container">
+                        <div class="ui small form">
+                            <div class="three fields">
+                                <div class="field">
+                                    <label>Begin report generation from</label>
+                                    <div class="ui calendar" id="df">
+                                        <div class="ui  fluid input left icon">
+                                            <i class="calendar icon"></i>
+                                            <input type="text" placeholder="Begin from">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>End report generation at</label>
+                                    <div class="ui calendar" id="dt">
+                                        <div class="ui  fluid input left icon">
+                                            <i class="calendar icon"></i>
+                                            <input type="text" placeholder="End at">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui submit button" id="btnSearchReport">Search</div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="report-display-container">
+                            <table class="ui compact table selectable" id="tblProductsSoldList">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty Sold</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="receipt-page inner-page hide">
+                <h2>Receipt</h2>
+                <div class="search-container">
+                    <div class="field" style="width: 300px">
+                        <div class="ui calendar" id="receiptDf">
+                            <div class="ui fluid input left icon">
+                                <i class="calendar icon"></i>
+                                <input type="text" placeholder="Begin from">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui submit button" id="btnSearchReceipt">Search</div>
+                </div>
+                <div class="receipt-inner-container">
+                    <div class="receipt-left">
+                        <h3>List of Receipts</h3>
+                        <div class="list-of-receipts">
+                            None yet
+                        </div>
+                    </div>
+                    <div class="receipt-right">
+                        <div class="recipt-plus-button-container">
+                            <button class="ui button black" id="btnPrintReceiptOnPlatform">Print</button>
+                            <div class="actual-receipt-platform">
+                                <div class="about-company">
+                                    Be-Nice Ventures<br>
+                                    P.O.Box RY127<br>
+                                    Kumasi - Ghana<br>
+                                    Loc: Abuakwa - Maakro<br>
+                                    Tel: 0244831710/0546597114
+                                </div>
+
+                                <div class="table-receipt-preamble">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td>Bill No.</td>
+                                                <td id="billNo">bill no.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Date</td>
+                                                <td id="timestamp">date</td>
+                                            </tr>
+                                            <tr>
+                                                <td>User</td>
+                                                <td id="user"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr width="100%">
+                                <div class="table-checkout-products">
+                                    <table>
+                                        <thead>
+                                            <th>Description</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Amt</th>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr width="100%">
+                                <div class="total-container">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <h3>TOTAL</h3>
+                                            </td>
+                                            <td class="total">
+                                                <h3 id="ReceiptTotalVal"></h3>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="money-issues">
+                                    <div>Amount Received: <span class="amountReceived"></span></div>
+                                    <div>Change: <span class="changeGiven"></span></div>
+                                </div>
+
+                                <div class="footer">
+                                    <span>Thanks for shopping with us</span>
+                                    <span>Software by: PlainBlue Inc. 0542462657</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="products-current-sale-container">
                 <div class="products">
                     <div class="menu">
@@ -175,28 +316,14 @@
                     <input type="text" id="txtAmountReceived" placeholder="GHC0.00" style="text-align: right;">
                 </div>
                 <div class="ui error message">
-                    <p>Amount paid is smaller than amount due</p>
+                    
                 </div>
             </div>
         </div>
         <div class="actions">
             <button class="ui button deny red" id="btnCancelAmountCustomerPaidModal">Close</button>
-            <button class="ui button green" id="btnCheckoutAmountCustomerPaid">Ok</button>
+            <button class="ui button approve green" id="btnCheckoutAmountCustomerPaid">Ok</button>
         </div>
-    </div>
-
-    <!-- Print Checkout Receipt Modal -->
-    <div class="ui modal basic" id="printCheckoutReceiptModal">
-        <div class="header">
-            Print Receipt?
-        </div>
-        <div class="image content">
-            <div class="actions">
-                <button class="ui button green massive" id="btnPrintReceipt">Print</button>
-                <button class="ui button deny red massive" id="btnClosePrintReceiptModal">Close</button>
-            </div>
-        </div>
-
     </div>
 
     <!-- Adding New Product Modal -->
@@ -217,6 +344,10 @@
                 <div class="field">
                     <label>Quantity</label>
                     <input type="number" placeholder="Qty" id="newPdtQty">
+                </div>
+                <div class="field">
+                    <label>Reorder Level</label>
+                    <input type="number" placeholder="Reorder Level" id="newPdtReorderLevel" value="0">
                 </div>
                 <div class="ui success message">
                     <p>Product Added!</p>
@@ -248,6 +379,9 @@
                 </div><br>
                 <div class="ui input fluid">
                     <input type="text" placeholder="Qty" id="editPdtQty">
+                </div><br>
+                <div class="ui input fluid">
+                    <input type="text" placeholder="Reorder Level" id="editPdtReorderLevel">
                 </div>
                 <div class="ui success message">
                     <p>Product Saved</p>
@@ -359,8 +493,8 @@
     </script>
     <script src="../../vendor/jquery-3.4.1.min.js"></script>
     <script src="../../vendor/semantic-ui/semantic.min.js"></script>
-    <!-- <script src="../../vendor/semantic-ui/calendar.min.js"></script>
-    <script src="../../vendor/semantic-ui/range-slider.js"></script> -->
+    <script src="../../vendor/semantic-ui/calendar.min.js"></script>
+    <!-- <script src="../../vendor/semantic-ui/range-slider.js"></script> -->
     <script src="./index.js"></script>
     <script>
         if (window.module) module = window.module;

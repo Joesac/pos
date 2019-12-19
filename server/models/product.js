@@ -14,6 +14,10 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    reorderLevel: {
+        type: Number,
+        default: 0
+    },
     dateAdded: {
         type: Date,
         default: Date.now

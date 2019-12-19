@@ -7,6 +7,8 @@ const Product = require("./models/product");
 const Checkout = require("./models/checkout");
 const User = require("./models/user")
 
+mongoose.set('useFindAndModify', false)
+
 mongoose.connect(`${process.env.CONNECTION}/${process.env.DATABASE}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -71,8 +73,8 @@ async function getCheckout(req, res, next) {
 // INSERT
 // Insert Product
 app.post("/product", async (req, res) => {
-  const { name, price, qty } = req.body;
-  const product = new Product({ name: name, price: price, qty: qty });
+  const { name, price, qty, reorderLevel } = req.body;
+  const product = new Product({ name: name, price: price, qty: qty, reorderLevel: reorderLevel });
   
   try {
     const newProduct = await product.save();
@@ -84,6 +86,33 @@ app.post("/product", async (req, res) => {
 
 // Insert Checkout
 app.post("/checkout", async (req, res) => {
+  const { products } = req.body
+  // Check to see if each of the quantity of products available are more than or equal
+  // to the quantity of each product selected
+  for (let i = 0; i < products.length; i++) {
+    productName = products[i].name
+    productQty = products[i].qty
+    const productWIthLowQty = await Product.find({name: { $eq: productName }, qty: { $lt: productQty } } )
+    if (productWIthLowQty.length) {
+      res.json({ lowerPdt: productWIthLowQty })
+      return
+    }
+  }
+
+  // if each of the products passed quantity comparison check then subtract quantity
+  try {
+    let lastProductSubtracted
+    for (let i = 0; i < products.length; i++) {
+      productName = products[i].name
+      productQty = products[i].qty
+      lastProductSubtracted = await Product.findOneAndUpdate({"name": { $regex: `^${productName}`, $options: 'ig' } }, { $inc: { "qty": -productQty } } )
+    }
+    // res.status(200).json(lastProductSubtracted)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+    return
+  }
+
   try {
     let numOfCheckouts = await Checkout.estimatedDocumentCount()
     req.body.receiptNumber = numOfCheckouts + 1
@@ -118,7 +147,37 @@ app.post("/login", async (req, res) => {
   }
 })
 
+app.post("/report/search", async (req, res) => {
+  const { dt, df } = req.body
+  const dateTo = new Date(dt)
+  const dateFrom = new Date(df)
+
+  try {
+    const checkouts = await Checkout.find({
+      dateAdded: { $gte: dateFrom, $lte: dateTo }
+    })
+    res.json(checkouts)
+  } catch(err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 // READ
+// Get receipt numbers
+app.get("/receipt-numbers/:date", async (req, res) => {
+  const { date } = req.params
+  const parsedDate = new Date(date)
+  
+  try {
+    const checkouts = await Checkout.find({
+      dateAdded: { $eq: parsedDate }
+    })
+    res.json(checkouts)
+  } catch(err) {
+    res.status(400).json({ message: err.message })
+  }
+}) 
+
 // Get all products
 app.get("/products", async (req, res) => {
   try {
@@ -162,7 +221,7 @@ app.get("/products/:id", getProduct, (req, res) => {
   res.send(res.foundProduct);
 });
 
-// Get a Product
+// Get a checkout
 app.get("/checkouts/:id", getCheckout, (req, res) => {
   res.send(res.foundCheckout);
 });
@@ -188,6 +247,9 @@ app.post("/products/edit/:id", getProduct, async (req, res) => {
   }
   if (req.body.qty !== null) {
     res.foundProduct.qty = req.body.qty;
+  }
+  if (req.body.reorderLevel !== null) {
+    res.foundProduct.reorderLevel = req.body.reorderLevel;
   }
   
   try {
