@@ -28,6 +28,8 @@ const userPage = $(".user-page");
 const productPage = $(".product-page");
 const reportPage = $(".report-page");
 const receiptPage = $(".receipt-page");
+const cartDiscountRatePercentageValue = $("#cartDiscountRatePercentageValue")
+const cartDiscountRateCalculatedAmount = $("#cartDiscountRateCalculatedAmount")
 
 let productsArrayTempStore = [];
 
@@ -319,6 +321,90 @@ function convertTimeStampToHRT(timestamp) {
   return date+' '+time;
 }
 /** END RECEIPT PAGE */
+
+/** DISCOUNT PAGE */
+const discountPage = $(".discount-page")
+const btnMenuDiscount = $("#btnMenuDiscount")
+const toggleEnableDiscount = $("#toggleEnableDiscount")
+const toggleDiscountExceedAmount = $("#toggleDiscountExceedAmount")
+const txtDiscountExceedAmount = $("#txtDiscountExceedAmount")
+const btnSaveDiscountSettings = $("#btnSaveDiscountSettings")
+const discountRatePercentageValue = $("#discountRatePercentageValue")
+
+btnMenuDiscount.click(function() {
+  innerPage.addClass('hide')
+  discountPage.removeClass('hide')
+})
+
+// Enabling Discount Functionality
+toggleEnableDiscount.checkbox({
+  onChecked: function() {
+    let $this = toggleEnableDiscount
+    $this.siblings('.form').children(".field").removeClass("disabled")
+  },
+  onUnchecked: function() {
+    let $this = toggleEnableDiscount
+    $this.siblings('.form').children(".field").addClass("disabled")
+  }
+})
+
+// Enabling Conditional Discount Functionality
+toggleDiscountExceedAmount.checkbox({
+  onChecked: function() {
+    txtDiscountExceedAmount.removeAttr("disabled")
+  },
+  onUnchecked: function() {
+    txtDiscountExceedAmount.attr("disabled", "disabled")
+  }
+})
+
+// Saving Discount Settings
+const discountRateErrorMsg = $(".discount-rate-error-msg")
+const discountConditionalAmountErrorMsg = $(".discount-conditional-amount-error-msg")
+const discountSuccessMsg = $(".discount-success-msg")
+let discountRate = 0
+let discountConditionalValue = 0
+
+btnSaveDiscountSettings.click(function() {
+  discountRate = 0
+  discountConditionalValue = 0.00
+  
+  discountSuccessMsg.addClass('hide')
+  
+  // Making sure that the discount rate value and conditional amount are not empty
+  if (checkBoxState(toggleEnableDiscount) && discountRatePercentageValue.val() == '') {
+    discountRateErrorMsg.removeClass('hide')
+    discountConditionalAmountErrorMsg.removeClass('hide')
+    
+    if (checkBoxState(toggleDiscountExceedAmount) && txtDiscountExceedAmount.val() == '') {
+      discountConditionalAmountErrorMsg.removeClass('hide')
+      return
+    } else {
+      discountConditionalAmountErrorMsg.addClass('hide')
+    }
+    return
+  } else {
+    discountRateErrorMsg.addClass('hide')
+  }
+  
+
+  if (checkBoxState(toggleEnableDiscount)) {
+    discountRate = Number(discountRatePercentageValue.val().trim())
+    
+    if (checkBoxState(toggleDiscountExceedAmount)) {
+      discountConditionalValue = Number(txtDiscountExceedAmount.val().trim())
+    }
+  }
+
+  discountSuccessMsg.removeClass('hide')
+  console.log('joeee')
+})
+
+function checkBoxState(checkbox) {
+  return checkbox.children("input").prop("checked")
+}
+
+/** END DISCOUNT PAGE */
 
 // Showing Clock
 setInterval(function() {
@@ -726,20 +812,56 @@ displaySearchResultsWrapper.on("click", ".product-item", function() {
     cart.find(`tr`).removeClass("red");
 
     productToAppend += `<tr id="${rowId}"><td>${productsArrayTempStore[id].name}</td><td>`;
-    productToAppend +=
-      '<div class="ui mini input"><input type="text" value="1" class="pdt-item-qty"></div>';
+    productToAppend += '<div class="ui mini input"><input type="text" value="1" class="pdt-item-qty"></div>';
     productToAppend += `</td><td class="pdt-item-price">${productsArrayTempStore[id].price}</td><td class="pdt-item-total">${productsArrayTempStore[id].price}</td><td>`;
     productToAppend += `<button class="ui circular google plus icon button trash-btn"><i id="trush_${productsArrayTempStore[id]._id}" class="icon trash alternate outline"></i></button>`;
     productToAppend += "</td></tr>";
     cart.find("tbody").append(productToAppend);
 
     let tds = tblCart.find("td.pdt-item-total");
-    let sumTotal = sumAllCartItems(tds);
-    totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(sumTotal.toFixed(2)));
+    let sumTotal = sumAllCartItems(tds);    
+    totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
   }
   // Set forcus to the searchbox
   txtSearch.focus();
 });
+
+function calculateDiscountAmount(principal, discountRate) {
+  return Number(principal) * (Number(discountRate) / 100)
+}
+const discountRowContainer = $(".discountRowContainer")
+function calculateAmountDueAndDiscounts(sumTotal) {
+  // Work on discount
+  let amountAppliedToQualifyDiscount = 0
+  cartDiscountRatePercentageValue.text(discountRatePercentageValue.val().trim())
+  let discCalAmount = calculateDiscountAmount(sumTotal, cartDiscountRatePercentageValue.text())
+  cartDiscountRateCalculatedAmount.text('GHC' + discCalAmount.toFixed(2))
+  let discountCalculatedAmount = 0
+
+  // Show or hide the discrount row
+  if (checkBoxState(toggleEnableDiscount)) {
+    discountRowContainer.removeClass('hide')
+    
+    if (checkBoxState(toggleDiscountExceedAmount)) {
+      amountAppliedToQualifyDiscount = txtDiscountExceedAmount.val()
+      // console.log('enabled amount to qualify for discount')
+      if (sumTotal >= amountAppliedToQualifyDiscount) {
+        discountCalculatedAmount = (sumTotal - discCalAmount)
+        // console.log('sum total greater or equal to amount due')
+      } else {
+        // console.log('Enabled but sum total is less than amount due')
+        discountCalculatedAmount = sumTotal
+      }
+    } else {
+      // console.log('Not enabled amount to quality for discount')
+      discountCalculatedAmount = (sumTotal - discCalAmount)
+    }
+  } else {
+    discountCalculatedAmount = sumTotal
+    discountRowContainer.addClass('hide')
+  }
+  return (discountCalculatedAmount).toFixed(2)
+}
 
 // Allowing only Numbers
 tblCart.on("keydown", ".pdt-item-qty", function(evt) {
@@ -774,9 +896,8 @@ tblCart.on("keyup", ".pdt-item-qty", function() {
 
   let tds = tblCart.find("td.pdt-item-total");
   let sumTotal = sumAllCartItems(tds);
-  totalVal
-    .children("h3")
-    .text("GHC" + formatNumberToCurrencyFormat(sumTotal.toFixed(2)));
+  
+  totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
 });
 
 // Removing item from Cart
@@ -786,9 +907,8 @@ tblCart.on("click", ".trash-btn", function() {
     .remove();
   let tds = tblCart.find("td.pdt-item-total");
   let sumTotal = sumAllCartItems(tds);
-  totalVal
-    .children("h3")
-    .text("GHC" + formatNumberToCurrencyFormat(sumTotal.toFixed(2)));
+
+  totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
 });
 
 // Clicking on Cash Charge Button
@@ -835,6 +955,8 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
   dataToSend.amountReceived = txtAmountReceived.val();
   dataToSend.seller = displayUsername.text();
   dataToSend.receiptNumber = 0;
+  dataToSend.discount = discountRate;
+  dataToSend.discountConditionalAmount = discountConditionalValue;
   dataToSend.paymentType = "cash";
 
   $.ajax({
@@ -851,7 +973,7 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
         return
       }
       ipc.send("prepare-receipt-print", res);
-      amountCustomerPaidModal.modal("ok")
+      // amountCustomerPaidModal.modal("ok")
     },
     error: function(e) {
       alert(e.message);
@@ -952,8 +1074,12 @@ function formatNumberToCurrencyFormat(number, total = false) {
   for (let i = tempReversedNum.length - 1; i >= 0; i--) {
     tempCorrectedNum += tempReversedNum[i];
   }
-
-  return tempCorrectedNum + "." + decimalPart;
+  
+  if (decimalPart != undefined) {
+    return tempCorrectedNum + "." + decimalPart;
+  } else {
+    return tempCorrectedNum + "." + '00'
+  }
 }
 
 function clock() {

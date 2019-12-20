@@ -113,6 +113,8 @@ app.post("/checkout", async (req, res) => {
     return
   }
 
+  res.send(req.body)
+return
   try {
     let numOfCheckouts = await Checkout.estimatedDocumentCount()
     req.body.receiptNumber = numOfCheckouts + 1

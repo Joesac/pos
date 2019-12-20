@@ -227,6 +227,11 @@
   display: block;
 }
 
+.app-container .inner-page .discount-inner-container {
+  width: 600px;
+  margin: 0 auto;
+}
+
 .app-container .products-current-sale-container {
   width: 100%;
   padding: var(--default-spacing);
@@ -247,6 +252,7 @@
 .app-container .products-current-sale-container .current-sale .cart table th:nth-child(n + 2),
 .app-container .products-current-sale-container .current-sale .cart table td:nth-child(n + 2) {
   text-align: center;
+  margin-bottom: 0;
 }
 
 .app-container .products-current-sale-container .current-sale .cart table th {
@@ -258,8 +264,17 @@
   font-size: 1.1rem;
 }
 
-.app-container .products-current-sale-container .current-sale .cart table .input {
-  max-width: 50px;
+.app-container .products-current-sale-container .current-sale .cart .discountRowContainer {
+  display: flex;
+  font-size: 1.1rem;
+  font-weight: bold;
+  align-items: center;
+  border-top: 2px solid var(--default-border-color);
+}
+
+.app-container .products-current-sale-container .current-sale .cart .input > input {
+  max-width: 60px;
+  text-align: center !important;
 }
 
 .app-container .products-current-sale-container .current-sale .total-container {

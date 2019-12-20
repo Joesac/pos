@@ -53,6 +53,9 @@
         <a class="item" id="btnMenuReceipt">
             <i class="icon closed captioning outline"></i>RECEIPT
         </a>
+        <a class="item" id="btnMenuDiscount">
+            <i class="icon tag"></i>DISCOUNT
+        </a>
     </div>
     <div class="ui top fixed menu">
         <div class="topbar">
@@ -252,6 +255,36 @@
                     </div>
                 </div>
             </div>
+            <div class="discount-page inner-page hide">
+                <h2>Discount</h2>
+                <p>Enabling Discount Functionality makes discount application in the selling of product.</p>
+                <div class="discount-inner-container">
+                    <div class="ui toggle checkbox" id="toggleEnableDiscount">
+                        <input type="checkbox" tabindex="0" class="hidden">
+                        <label>Enable Discount Functionality</label>
+                    </div><br><br>
+                    <div class="ui form">
+                        <div class="field disabled">
+                            <label>Discount Rate e.g. 0.3%)</label>
+                            <input type="text" value="5" placeholder="Discount Rate" id="discountRatePercentageValue">
+                        </div>
+                        <div class="field disabled">
+                            <div class="ui toggle checkbox" id="toggleDiscountExceedAmount">
+                                <input type="checkbox" tabindex="1" class="hidden">
+                                <label>Check this to apply conditional discount</label>
+                            </div>
+                        </div>
+                        <div class="field disabled">
+                            <label>Apply if Amount Due is greater than or equal to:</label>
+                            <input type="text" value="54.1" placeholder="Apply if value exceeds" id="txtDiscountExceedAmount" disabled>
+                        </div>
+                        <button class="ui button black" id="btnSaveDiscountSettings">Save Settings</button>
+                    </div>
+                    <div class="ui green message hide discount-success-msg">Settings saved successfully!</div>
+                    <div class="ui red message hide discount-rate-error-msg">Discount Rate cannot be empty!</div>
+                    <div class="ui red message hide discount-conditional-amount-error-msg">Conditional Amount cannot be empty!</div>
+                </div>
+            </div>
             <div class="products-current-sale-container">
                 <div class="products">
                     <div class="menu">
@@ -287,6 +320,13 @@
                             <tbody>
                             </tbody>
                         </table>
+                        <div class="discountRowContainer hide">
+                            <div class="">Discount</div>
+                            <div class="spacer"></div>
+                            <div id="cartDiscountRatePercentageValue">0</div>%
+                            <div class="spacer"></div>
+                            <div id="cartDiscountRateCalculatedAmount">0.00</div>
+                        </div>
                     </div>
 
                     <div class="total-container">
@@ -315,9 +355,7 @@
                 <div class="ui input big fluid">
                     <input type="text" id="txtAmountReceived" placeholder="GHC0.00" style="text-align: right;">
                 </div>
-                <div class="ui error message">
-                    
-                </div>
+                <div class="ui error message"></div>
             </div>
         </div>
         <div class="actions">

@@ -16,6 +16,12 @@ const CheckoutSchema = new mongoose.Schema({
         seller: {
             type: String
         },
+        discount: {
+            type: String
+        },
+        discountConditionalAmount: {
+            type: Number
+        },
         amountReceived: {
             type: Number
         },

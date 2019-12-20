@@ -233,6 +233,11 @@
         }
       }
     }
+
+    .discount-inner-container {
+      width: 600px;
+      margin: 0 auto;
+    }
   }
 
   .products-current-sale-container {
@@ -259,6 +264,7 @@
           th:nth-child(n + 2),
           td:nth-child(n + 2) {
             text-align: center;
+            margin-bottom: 0;
           }
 
           th {
@@ -269,10 +275,19 @@
             font-weight: bold;
             font-size: 1.1rem;
           }
+        }
 
-          .input {
-            max-width: 50px;
-          }
+        .discountRowContainer {
+          display: flex;
+          font-size: 1.1rem;
+          font-weight: bold;
+          align-items: center;
+          border-top: 2px solid var(--default-border-color);
+        }
+
+        .input>input {
+          max-width: 60px;
+          text-align: center !important;
         }
       }
 
