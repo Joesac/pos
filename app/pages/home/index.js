@@ -6,6 +6,7 @@ const txtSearch = $("#txtSearch");
 const cart = $(".cart");
 const tblCart = $("#tblCart");
 const totalVal = $("#totalVal");
+const totalAmountDueVal = $("#totalAmountDueVal");
 const btnChargeCash = $("#btnChargeCash");
 const amountCustomerPaidModal = $("#amountCustomerPaidModal");
 const btnCancelAmountCustomerPaidModal = $("#btnCancelAmountCustomerPaidModal");
@@ -279,34 +280,52 @@ listOfReceipts.on("click", ".receiptTimestamps", function() {
     }
   }
   
-    const tbodyProducts = $(".table-checkout-products tbody")
-    let dataToAppend = '';
-    let sumTotal = 0;
-    let sale = foundCheckout.sale;
-    const totalVal = $("#ReceiptTotalVal")
-    const amountReceived = $(".amountReceived")
-    const changeGiven = $(".changeGiven")
-    const timeStamp = $("#timestamp")
-    const user = $("#user")
-    const billNo = $("#billNo")
-    
-    for (let i = 0; i < sale.products.length; i++) {
-        const item = sale.products[i];
-        let amount = item.price * item.qty
-        sumTotal += amount
-        dataToAppend += `<tr><td>${item.name}</td>`
-        dataToAppend += `<td>${item.qty}</td>`
-        dataToAppend += `<td>${item.price}</td>`
-        dataToAppend += `<td>${amount.toFixed(2)}</td></tr>`
-    }
-    tbodyProducts.html(dataToAppend)
-    totalVal.empty().append(sumTotal.toFixed(2))
-    amountReceived.text(sale.amountReceived.toFixed(2))
-    changeGiven.text((Number(sale.amountReceived) - Number(sumTotal)).toFixed(2))
-    user.text(sale.seller)
-    billNo.text(sale.receiptNumber)
-    timeStamp.text(convertTimeStampToHRT(foundCheckout.timestamp))
+  const tbodyProducts = $(".table-checkout-products tbody")
+  let dataToAppend = '';
+  let sumTotal = 0;
+  let sale = foundCheckout.sale;
+  const receiptTotalVal = $("#receiptTotalVal")
+  const amountReceived = $(".amountReceived")
+  const changeGiven = $(".changeGiven")
+  const receiptDiscount = $(".receiptDiscount")
+  const receiptDiscountCondAmt = $(".receiptDiscountCondAmt")
+  const timeStamp = $("#timestamp")
+  const user = $("#user")
+  const billNo = $("#billNo")
+  
+  for (let i = 0; i < sale.products.length; i++) {
+      const item = sale.products[i];
+      let amount = item.price * item.qty
+      sumTotal += amount
+      dataToAppend += `<tr><td>${item.name}</td>`
+      dataToAppend += `<td>${item.qty}</td>`
+      dataToAppend += `<td>${item.price}</td>`
+      dataToAppend += `<td>${amount.toFixed(2)}</td></tr>`
+  }
+  tbodyProducts.html(dataToAppend)
 
+  let discount = 0
+  let amountDue = sumTotal
+
+  if (sale.discount > 0) {
+    if (sale.discountConditionalAmount > 0) {
+      if (sumTotal >= sale.discountConditionalAmount) {
+        discount = sumTotal * (sale.discount / 100)
+        amountDue = (sumTotal - discount).toFixed(2)
+      }
+    } else {
+      discount = sumTotal * (sale.discount / 100)
+      amountDue = (sumTotal - discount).toFixed(2)
+    }
+  }
+  receiptTotalVal.text(amountDue)
+  amountReceived.text(sale.amountReceived.toFixed(2))
+  changeGiven.text((Number(sale.amountReceived) - Number(amountDue)).toFixed(2))
+  receiptDiscount.text(sale.discount + '%')
+  receiptDiscountCondAmt.text(sale.discountConditionalAmount)
+  user.text(sale.seller)
+  billNo.text(sale.receiptNumber)
+  timeStamp.text(convertTimeStampToHRT(foundCheckout.timestamp))
 })
 
 const actualReceiptPlatform = $(".actual-receipt-platform")
@@ -331,7 +350,40 @@ const txtDiscountExceedAmount = $("#txtDiscountExceedAmount")
 const btnSaveDiscountSettings = $("#btnSaveDiscountSettings")
 const discountRatePercentageValue = $("#discountRatePercentageValue")
 
+const discountRateErrorMsg = $(".discount-rate-error-msg")
+const discountConditionalAmountErrorMsg = $(".discount-conditional-amount-error-msg")
+const discountSuccessMsg = $(".discount-success-msg")
+let discountRate = 0
+let discountConditionalValue = 0.00
+let discountConfiguration = {}
+
+// Get the discount configuration from localStorage
+let discountConf = localStorage.getItem("discountConfiguration")
+if (discountConf != null) {
+  discountConf = JSON.parse(discountConf)
+
+  discountRate = (discountConf.discount)
+  discountRatePercentageValue.val(discountRate)
+  discountConditionalValue = discountConf.conditionAmount
+  txtDiscountExceedAmount.val(discountConditionalValue)
+
+  if (discountConf.enabled) {
+    toggleEnableDiscount.checkbox('set checked')
+    toggleEnableDiscount.siblings('.form').children(".field").removeClass("disabled")
+  } else {
+    toggleEnableDiscount.siblings('.form').children(".field").addClass("disabled")
+  }
+
+  if (discountConf.conditionEnabled) {
+    toggleDiscountExceedAmount.checkbox('set checked')
+    txtDiscountExceedAmount.removeAttr("disabled")
+  } else {
+    txtDiscountExceedAmount.attr("disabled")
+  }
+}
+
 btnMenuDiscount.click(function() {
+  discountSuccessMsg.addClass('hide')
   innerPage.addClass('hide')
   discountPage.removeClass('hide')
 })
@@ -345,6 +397,8 @@ toggleEnableDiscount.checkbox({
   onUnchecked: function() {
     let $this = toggleEnableDiscount
     $this.siblings('.form').children(".field").addClass("disabled")
+    toggleDiscountExceedAmount.checkbox('set unchecked')
+    txtDiscountExceedAmount.attr("disabled")
   }
 })
 
@@ -359,17 +413,19 @@ toggleDiscountExceedAmount.checkbox({
 })
 
 // Saving Discount Settings
-const discountRateErrorMsg = $(".discount-rate-error-msg")
-const discountConditionalAmountErrorMsg = $(".discount-conditional-amount-error-msg")
-const discountSuccessMsg = $(".discount-success-msg")
-let discountRate = 0
-let discountConditionalValue = 0
-
 btnSaveDiscountSettings.click(function() {
-  discountRate = 0
-  discountConditionalValue = 0.00
-  
+  let discConf = JSON.parse(localStorage.getItem("discountConfiguration"))
+  discountRate = discConf.discount || 0
+  discountConditionalValue = discConf.conditionAmount || 0
+
+  discountConfiguration.discount = discountRate // localStorage.getItem("discountConfiguration").discount || 0
+  discountConfiguration.enabled = false
+  discountConfiguration.conditionAmount = discountConditionalValue // localStorage.getItem("discountConfiguration").conditionAmount || 0
+  discountConfiguration.conditionEnabled = false
+
   discountSuccessMsg.addClass('hide')
+  discountConditionalAmountErrorMsg.addClass('hide')
+  discountRateErrorMsg.addClass('hide')
   
   // Making sure that the discount rate value and conditional amount are not empty
   if (checkBoxState(toggleEnableDiscount) && discountRatePercentageValue.val() == '') {
@@ -379,25 +435,24 @@ btnSaveDiscountSettings.click(function() {
     if (checkBoxState(toggleDiscountExceedAmount) && txtDiscountExceedAmount.val() == '') {
       discountConditionalAmountErrorMsg.removeClass('hide')
       return
-    } else {
-      discountConditionalAmountErrorMsg.addClass('hide')
     }
     return
-  } else {
-    discountRateErrorMsg.addClass('hide')
   }
   
-
   if (checkBoxState(toggleEnableDiscount)) {
     discountRate = Number(discountRatePercentageValue.val().trim())
+    discountConfiguration.discount = discountRate
+    discountConfiguration.enabled = true
     
     if (checkBoxState(toggleDiscountExceedAmount)) {
       discountConditionalValue = Number(txtDiscountExceedAmount.val().trim())
+      discountConfiguration.conditionAmount = discountConditionalValue
+      discountConfiguration.conditionEnabled = true
     }
   }
-
+  localStorage.setItem("discountConfiguration", JSON.stringify(discountConfiguration))
   discountSuccessMsg.removeClass('hide')
-  console.log('joeee')
+  // Will add Network Saving of Discount if need arises
 })
 
 function checkBoxState(checkbox) {
@@ -754,7 +809,6 @@ txtProductSearch.keyup(function() {
 
   $.get(`${base_url}/search/products`, { searchTerm }, resData => {
     if (resData.length) {
-      productsArrayTempStore = resData;
       for (i = 0; i < resData.length; i++) {
         allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>${resData[i].price}</td><td>${resData[i].qty}</td><td`
         if (resData[i].qty < resData[i].reorderLevel) {
@@ -813,13 +867,14 @@ displaySearchResultsWrapper.on("click", ".product-item", function() {
 
     productToAppend += `<tr id="${rowId}"><td>${productsArrayTempStore[id].name}</td><td>`;
     productToAppend += '<div class="ui mini input"><input type="text" value="1" class="pdt-item-qty"></div>';
-    productToAppend += `</td><td class="pdt-item-price">${productsArrayTempStore[id].price}</td><td class="pdt-item-total">${productsArrayTempStore[id].price}</td><td>`;
+    productToAppend += `</td><td class="pdt-item-price">${productsArrayTempStore[id].price.toFixed(2)}</td><td class="pdt-item-total">${productsArrayTempStore[id].price.toFixed(2)}</td><td>`;
     productToAppend += `<button class="ui circular google plus icon button trash-btn"><i id="trush_${productsArrayTempStore[id]._id}" class="icon trash alternate outline"></i></button>`;
     productToAppend += "</td></tr>";
     cart.find("tbody").append(productToAppend);
 
     let tds = tblCart.find("td.pdt-item-total");
-    let sumTotal = sumAllCartItems(tds);    
+    let sumTotal = sumAllCartItems(tds);
+    totalAmountDueVal.children("h3").text("GHC" + sumTotal.toFixed(2))
     totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
   }
   // Set forcus to the searchbox
@@ -897,6 +952,7 @@ tblCart.on("keyup", ".pdt-item-qty", function() {
   let tds = tblCart.find("td.pdt-item-total");
   let sumTotal = sumAllCartItems(tds);
   
+  totalAmountDueVal.children("h3").text("GHC" + sumTotal.toFixed(2))
   totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
 });
 
@@ -908,6 +964,7 @@ tblCart.on("click", ".trash-btn", function() {
   let tds = tblCart.find("td.pdt-item-total");
   let sumTotal = sumAllCartItems(tds);
 
+  totalAmountDueVal.children("h3").text("GHC" + sumTotal.toFixed(2))
   totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
 });
 
@@ -973,7 +1030,6 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
         return
       }
       ipc.send("prepare-receipt-print", res);
-      // amountCustomerPaidModal.modal("ok")
     },
     error: function(e) {
       alert(e.message);

@@ -5,6 +5,7 @@ const app = express();
 const mongoose = require("mongoose");
 const Product = require("./models/product");
 const Checkout = require("./models/checkout");
+const Discount = require("./models/discount")
 const User = require("./models/user")
 
 mongoose.set('useFindAndModify', false)
@@ -113,8 +114,8 @@ app.post("/checkout", async (req, res) => {
     return
   }
 
-  res.send(req.body)
-return
+//   res.send(req.body)
+// return
   try {
     let numOfCheckouts = await Checkout.estimatedDocumentCount()
     req.body.receiptNumber = numOfCheckouts + 1
@@ -159,6 +160,23 @@ app.post("/report/search", async (req, res) => {
       dateAdded: { $gte: dateFrom, $lte: dateTo }
     })
     res.json(checkouts)
+  } catch(err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+// creating discount / Saving discount
+app.post("/discount", async (req, res) => {
+  const { discount, conditionalDiscountAmount } = req.body
+  res.json(req.body)
+  return
+  try {
+    // if (id != undefined) {
+    //   discountCount = await Discount.update({id: ObjectId(_id)})
+    // } else {
+    //   await Discount.update
+    // }
+    res.json(discount)
   } catch(err) {
     res.status(400).json({ message: err.message })
   }

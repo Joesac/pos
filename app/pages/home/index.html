@@ -235,7 +235,7 @@
                                                 <h3>TOTAL</h3>
                                             </td>
                                             <td class="total">
-                                                <h3 id="ReceiptTotalVal"></h3>
+                                                <h3 id="receiptTotalVal"></h3>
                                             </td>
                                         </tr>
                                     </table>
@@ -244,6 +244,8 @@
                                 <div class="money-issues">
                                     <div>Amount Received: <span class="amountReceived"></span></div>
                                     <div>Change: <span class="changeGiven"></span></div>
+                                    <div>Discount: <span class="receiptDiscount"></span></div>
+                                    <div>Discount Qualify Amount: <span class="receiptDiscountCondAmt"></span></div>
                                 </div>
 
                                 <div class="footer">
@@ -266,7 +268,7 @@
                     <div class="ui form">
                         <div class="field disabled">
                             <label>Discount Rate e.g. 0.3%)</label>
-                            <input type="text" value="5" placeholder="Discount Rate" id="discountRatePercentageValue">
+                            <input type="text" value="0" placeholder="Discount Rate" id="discountRatePercentageValue">
                         </div>
                         <div class="field disabled">
                             <div class="ui toggle checkbox" id="toggleDiscountExceedAmount">
@@ -276,7 +278,7 @@
                         </div>
                         <div class="field disabled">
                             <label>Apply if Amount Due is greater than or equal to:</label>
-                            <input type="text" value="54.1" placeholder="Apply if value exceeds" id="txtDiscountExceedAmount" disabled>
+                            <input type="text" value="0" placeholder="Apply if value exceeds" id="txtDiscountExceedAmount" disabled>
                         </div>
                         <button class="ui button black" id="btnSaveDiscountSettings">Save Settings</button>
                     </div>
@@ -300,7 +302,7 @@
                         <h2>Nothing Searched for yet</h2>
                     </div>
                     <div class="checkout-holder">
-                        <button class="ui button green fluid" id="btnChargeCash">Charge</button>
+                        <button class="ui button blue fluid" id="btnChargeCash">Cash</button>
                         <button class="ui button green fluid" id="btnChargeCheque">Cheque</button>
                     </div>
                 </div>
@@ -330,9 +332,13 @@
                     </div>
 
                     <div class="total-container">
-                        <div>
-                            <h3>TOTAL</h3>
+                        <div><h3>TOTAL</h3></div>
+                        <div class="spacer"></div>
+                        <div class="total" id="totalAmountDueVal">
+                            <h3>GHC0.00</h3>
                         </div>
+                        <div class="spacer"></div>
+                        <div><h3>AMOUNT DUE</h3></div>
                         <div class="spacer"></div>
                         <div class="total" id="totalVal">
                             <h3>GHC0.00</h3>
@@ -359,8 +365,8 @@
             </div>
         </div>
         <div class="actions">
-            <button class="ui button deny red" id="btnCancelAmountCustomerPaidModal">Close</button>
-            <button class="ui button approve green" id="btnCheckoutAmountCustomerPaid">Ok</button>
+            <button class="ui button deny red large" id="btnCancelAmountCustomerPaidModal">Close</button>
+            <button class="ui button green large" id="btnCheckoutAmountCustomerPaid">Ok</button>
         </div>
     </div>
 

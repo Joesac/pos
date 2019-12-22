@@ -2,9 +2,11 @@ const ipc = require('electron').ipcRenderer
 
 const container = $(".container")
 const tbodyProducts = $(".table-container tbody")
-const totalVal = $("#totalVal")
+const receiptTotalVal = $("#receiptTotalVal")
 const amountReceived = $(".amountReceived")
 const changeGiven = $(".changeGiven")
+const receiptDiscount = $(".receiptDiscount")
+const receiptDiscountCondAmt = $(".receiptDiscountCondAmt")
 const timeStamp = $("#timestamp")
 const user = $("#user")
 const billNo = $("#billNo")
@@ -25,14 +27,29 @@ ipc.on('print-automatically', (evt, data) => {
     }
     tbodyProducts.html(dataToAppend)
     
-    totalVal.empty().append(sumTotal.toFixed(2))
-    amountReceived.text(sale.amountReceived.toFixed(2))
-    changeGiven.text((Number(sale.amountReceived) - Number(sumTotal)).toFixed(2))
+    let discount = 0
+    let amountDue = sumTotal
+
+    if (sale.discount > 0) {
+        if (sale.discountConditionalAmount > 0) {
+            if (sumTotal >= sale.discountConditionalAmount) {
+                discount = sumTotal * (sale.discount / 100)
+                amountDue = (sumTotal - discount).toFixed(2)
+            }
+        } else {
+            discount = sumTotal * (sale.discount / 100)
+            amountDue = (sumTotal - discount).toFixed(2)
+        }
+    }
+
+    receiptTotalVal.text('GHC' + Number(amountDue).toFixed(2))
+    amountReceived.text(sale.amountReceived)
+    changeGiven.text((Number(sale.amountReceived) - Number(amountDue)).toFixed(2))
+    receiptDiscount.text(sale.discount + '%')
+    receiptDiscountCondAmt.text(sale.discountConditionalAmount)
     user.text(sale.seller)
     billNo.text(sale.receiptNumber)
     timeStamp.text(convertTimeStampToHRT(data.timestamp))
-
-    console.log(amountReceived.text(), changeGiven.text())
 
     ipc.send("begin-print", data)
 })
