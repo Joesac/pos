@@ -5,13 +5,23 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "electron:start": "electron ."
+    "electron:start": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "electron:win": "electron-builder build -w zip"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^7.1.3"
+    "electron": "^7.1.3",
+    "electron-builder": "^21.2.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "build": {
+    "appId": "com.plainblue.pos",
+    "productName": "TeleMart POS",
+    "directories": {
+      "buildResources": "./assets"
+    }
+  }
 }

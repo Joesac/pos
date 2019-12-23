@@ -23,6 +23,14 @@
   color: white;
 }
 
+.sidebar.menu {
+  a.item {
+    font-size: 1.3rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
 .login-page {
   display: flex;
   align-items: center;
@@ -32,7 +40,7 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background: #374dc7;
+  background: #1C1A1C;
   z-index: 500;
 
   .login-form-wrapper {
@@ -73,6 +81,7 @@
     font-size: 1.2rem;
     #menuBars {
       cursor: pointer;
+      padding-right: var(--default-spacing);
     }
   }
 

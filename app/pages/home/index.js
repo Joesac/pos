@@ -99,7 +99,11 @@ function getUsername() {
 }
 
 function getRole() {
-  return JSON.parse(localStorage.getItem("loggedInUserData")).role
+  if (localStorage.getItem("loggedInUserData")) {
+    return JSON.parse(localStorage.getItem("loggedInUserData")).role
+  } else {
+    return null
+  }
 }
 
 function hideShowMenuBars(role) {
@@ -114,6 +118,10 @@ btnLogout.click(function() {
   localStorage.removeItem("loggedInUserData")
   loginPage.removeClass("hide")
   innerPage.addClass("hide")
+  $(".sidebar").sidebar("hide");
+  txtAmountReceived.val("");
+  cart.find("tbody").empty();
+  totalVal.children("h3").text("GHC0.00");
 })
 /** END LOGIN SCRIPT */
 
@@ -380,6 +388,13 @@ if (discountConf != null) {
   } else {
     txtDiscountExceedAmount.attr("disabled")
   }
+} else {
+  // discountConf = 
+  discountConfiguration.discount = 0
+  discountConfiguration.enabled = false
+  discountConfiguration.conditionAmount = 0
+  discountConfiguration.conditionEnabled = false
+  localStorage.setItem("discountConfiguration", JSON.stringify(discountConfiguration))
 }
 
 btnMenuDiscount.click(function() {
@@ -393,12 +408,14 @@ toggleEnableDiscount.checkbox({
   onChecked: function() {
     let $this = toggleEnableDiscount
     $this.siblings('.form').children(".field").removeClass("disabled")
+    discountRowContainer.removeClass('hide')
   },
   onUnchecked: function() {
     let $this = toggleEnableDiscount
     $this.siblings('.form').children(".field").addClass("disabled")
     toggleDiscountExceedAmount.checkbox('set unchecked')
     txtDiscountExceedAmount.attr("disabled")
+    discountRowContainer.addClass('hide')
   }
 })
 
@@ -966,6 +983,7 @@ tblCart.on("click", ".trash-btn", function() {
 
   totalAmountDueVal.children("h3").text("GHC" + sumTotal.toFixed(2))
   totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
+  txtSearch.focus()
 });
 
 // Clicking on Cash Charge Button

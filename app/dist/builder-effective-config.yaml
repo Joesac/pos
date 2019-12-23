@@ -1,0 +1,6 @@
+directories:
+  output: dist
+  buildResources: ./assets
+appId: com.plainblue.pos
+productName: TeleMart POS
+electronVersion: 7.1.3
