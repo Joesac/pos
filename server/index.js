@@ -88,6 +88,7 @@ app.post("/product", async (req, res) => {
 // Insert Checkout
 app.post("/checkout", async (req, res) => {
   const { products } = req.body
+  
   // Check to see if each of the quantity of products available are more than or equal
   // to the quantity of each product selected
   for (let i = 0; i < products.length; i++) {

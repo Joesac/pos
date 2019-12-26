@@ -160,7 +160,7 @@ btnSearchReport.click(function() {
       let pdsAndQuantitiesSold = calculate(filterSales(res))
       let allPdtsSold;
       for (i = 0; i < pdsAndQuantitiesSold.length; i++) {
-        allPdtsSold += `<tr><td>${pdsAndQuantitiesSold[i].pdt.element.name}</td><td>${pdsAndQuantitiesSold[i].pdt.qtyAccumulator}</td><td>GHC${ formatNumberToCurrencyFormat((pdsAndQuantitiesSold[i].pdt.element.price * pdsAndQuantitiesSold[i].pdt.qtyAccumulator).toFixed(2)) }</td></tr>`;
+        allPdtsSold += `<tr><td>${pdsAndQuantitiesSold[i].pdt.element.name}</td><td>${pdsAndQuantitiesSold[i].pdt.qtyAccumulator}</td><td>&#8373;${ formatNumberToCurrencyFormat((pdsAndQuantitiesSold[i].pdt.element.price * pdsAndQuantitiesSold[i].pdt.qtyAccumulator).toFixed(2)) }</td></tr>`;
       }
       tblProductsSoldListTbody.html(allPdtsSold);
     },
@@ -674,7 +674,7 @@ btnMenuProduct.click(function() {
   $.get(`${base_url}/products`, resData => {
     if (resData.length) {
       for (i = 0; i < resData.length; i++) {
-        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>${resData[i].price}</td><td>${resData[i].qty}</td><td`
+        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>&#8373;${resData[i].price}</td><td>${resData[i].qty}</td><td`
         if (resData[i].qty < resData[i].reorderLevel) {
           allProducts += ` class="reorder-level-reached" `
         }
@@ -697,13 +697,13 @@ tblProductsListTbody.on("click", "tr", function() {
   const $this = $(this);
   selectedProductObj.id = $this.attr("id");
   selectedProductObj.name = $this.children("td:nth-child(1)").text();
-  selectedProductObj.price = $this.children("td:nth-child(2)").text();
+  selectedProductObj.price = $this.children("td:nth-child(2)").text() ;
   selectedProductObj.qty = $this.children("td:nth-child(3)").text();
   selectedProductObj.reorderLevel = $this.children("td:nth-child(4)").text();
 
   saveProductEdit.attr("id", `save_${selectedProductObj.id}`);
   editPdtName.val(selectedProductObj.name);
-  editPdtPrice.val(selectedProductObj.price);
+  editPdtPrice.val( getValueWithoutCediSign( selectedProductObj.price ) );
   editPdtQty.val(selectedProductObj.qty);
   editPdtReorderLevel.val(selectedProductObj.reorderLevel);
   editProductModal.modal({closable: false}).modal("show");
@@ -735,7 +735,7 @@ saveProductEdit.click(function() {
       let pdtRow = tblProductsListTbody.find(`tr#${formattedId}`)
 
       pdtRow.children("td:nth-child(1)").text(editPdtName.val())
-      pdtRow.children("td:nth-child(2)").text(editPdtPrice.val())
+      pdtRow.children("td:nth-child(2)").html("&#8373;" + editPdtPrice.val())
       pdtRow.children("td:nth-child(3)").text(editPdtQty.val())
       pdtRow.children("td:nth-child(4)").text(editPdtReorderLevel.val())
       editProductModal.find('.form').addClass('success')
@@ -827,7 +827,7 @@ txtProductSearch.keyup(function() {
   $.get(`${base_url}/search/products`, { searchTerm }, resData => {
     if (resData.length) {
       for (i = 0; i < resData.length; i++) {
-        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>${resData[i].price}</td><td>${resData[i].qty}</td><td`
+        allProducts += `<tr id="${resData[i]._id}"><td>${resData[i].name}</td><td>&#8373;${resData[i].price}</td><td>${resData[i].qty}</td><td`
         if (resData[i].qty < resData[i].reorderLevel) {
           allProducts += ` class="reorder-level-reached" `
         }
@@ -864,7 +864,7 @@ txtSearch.keyup(function() {
     for (i = 0; i < resData.length; i++) {
       searchedProducts += `<button class="ui button blue product-item" id="${i}">
       <p>${resData[i].name}</p>
-      <p>GHC${resData[i].price}</p>
+      <p>&#8373;${resData[i].price}</p>
       </button>`;
     }
     displaySearchResultsWrapper.html(searchedProducts);
@@ -884,15 +884,15 @@ displaySearchResultsWrapper.on("click", ".product-item", function() {
 
     productToAppend += `<tr id="${rowId}"><td>${productsArrayTempStore[id].name}</td><td>`;
     productToAppend += '<div class="ui mini input"><input type="text" value="1" class="pdt-item-qty"></div>';
-    productToAppend += `</td><td class="pdt-item-price">${productsArrayTempStore[id].price.toFixed(2)}</td><td class="pdt-item-total">${productsArrayTempStore[id].price.toFixed(2)}</td><td>`;
+    productToAppend += `</td><td class="pdt-item-price"><span>&#8373;</span>${productsArrayTempStore[id].price.toFixed(2)}</td><td class="pdt-item-total"><span>&#8373;</span>${productsArrayTempStore[id].price.toFixed(2)}</td><td>`;
     productToAppend += `<button class="ui circular google plus icon button trash-btn"><i id="trush_${productsArrayTempStore[id]._id}" class="icon trash alternate outline"></i></button>`;
     productToAppend += "</td></tr>";
     cart.find("tbody").append(productToAppend);
 
     let tds = tblCart.find("td.pdt-item-total");
     let sumTotal = sumAllCartItems(tds);
-    totalAmountDueVal.children("h3").text("GHC" + sumTotal.toFixed(2))
-    totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
+    totalAmountDueVal.children("h3").html("&#8373;" + sumTotal.toFixed(2))
+    totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
   }
   // Set forcus to the searchbox
   txtSearch.focus();
@@ -907,7 +907,7 @@ function calculateAmountDueAndDiscounts(sumTotal) {
   let amountAppliedToQualifyDiscount = 0
   cartDiscountRatePercentageValue.text(discountRatePercentageValue.val().trim())
   let discCalAmount = calculateDiscountAmount(sumTotal, cartDiscountRatePercentageValue.text())
-  cartDiscountRateCalculatedAmount.text('GHC' + discCalAmount.toFixed(2))
+  cartDiscountRateCalculatedAmount.html('&#8373;' + discCalAmount.toFixed(2))
   let discountCalculatedAmount = 0
 
   // Show or hide the discrount row
@@ -952,15 +952,15 @@ tblCart.on("keyup", ".pdt-item-qty", function() {
   $this
     .closest("td")
     .siblings(".pdt-item-total")
-    .text(
+    .html("&#8373;" +
       formatNumberToCurrencyFormat(
         (
           myValue *
           Number.parseFloat(
-            $this
+            getValueWithoutCediSign($this
               .closest("td")
               .siblings(".pdt-item-price")
-              .text()
+              .text())
           )
         ).toFixed(2)
       )
@@ -969,8 +969,8 @@ tblCart.on("keyup", ".pdt-item-qty", function() {
   let tds = tblCart.find("td.pdt-item-total");
   let sumTotal = sumAllCartItems(tds);
   
-  totalAmountDueVal.children("h3").text("GHC" + sumTotal.toFixed(2))
-  totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
+  totalAmountDueVal.children("h3").html("&#8373;" + sumTotal.toFixed(2))
+  totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
 });
 
 // Removing item from Cart
@@ -981,8 +981,8 @@ tblCart.on("click", ".trash-btn", function() {
   let tds = tblCart.find("td.pdt-item-total");
   let sumTotal = sumAllCartItems(tds);
 
-  totalAmountDueVal.children("h3").text("GHC" + sumTotal.toFixed(2))
-  totalVal.children("h3").text("GHC" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
+  totalAmountDueVal.children("h3").html("&#8373;" + sumTotal.toFixed(2))
+  totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
   txtSearch.focus()
 });
 
@@ -1001,8 +1001,7 @@ btnCancelAmountCustomerPaidModal.click(function() {
 // Charging by Cash
 const errorTextContainer = amountCustomerPaidModal.find("div.error")
 btnCheckoutAmountCustomerPaid.on("click", function() {
-  
-  if (Number(txtAmountReceived.val().replace(",","") - Number(totalVal.children('h3').text().split("GHC")[1].replace(",","")) < 0)) {
+  if (Number(txtAmountReceived.val().replace(",","") - getValueWithoutCediSign(totalVal.children('h3').text().replace(",","")) < 0)) {
     errorTextContainer.html("<p>Amount paid is smaller than amount due</p>")
     txtAmountReceived.closest(".form").addClass('error')
     txtAmountReceived.val("")
@@ -1019,13 +1018,11 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
       productPurchased = {};
     productPurchased.name = tds.eq(0).text();
     productPurchased.qty = tds.find(".pdt-item-qty").val();
-    productPurchased.price = $(this)
-      .find(".pdt-item-price")
-      .text();
+    productPurchased.price = getValueWithoutCediSign($(this).find(".pdt-item-price").text());
 
     productsPurchasedArray.push(productPurchased);
   });
-
+  
   dataToSend.products = productsPurchasedArray;
   dataToSend.amountReceived = txtAmountReceived.val();
   dataToSend.seller = displayUsername.text();
@@ -1060,16 +1057,24 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
 btnNew.click(function() {
   txtAmountReceived.val("");
   cart.find("tbody").empty();
-  totalVal.children("h3").text("GHC0.00");
+  totalAmountDueVal.children("h3").html("&#8373;0.00")
+  totalVal.children("h3").html("&#8373;0.00");
+  txtSearch.val("").focus()
+  displaySearchResultsWrapper.html("<h2>Nothing Searched for yet</h2")
 });
 
 // Functions
+
+function getValueWithoutCediSign(cediIncludedAmount) {
+  return Number(cediIncludedAmount.substr(1))
+}
+
 function sumAllCartItems(tds) {
   let total = 0;
   let commanSeparatedNumber = 0;
   $.each(tds, function(index, ele) {
     commanSeparatedNumber = ele.textContent.replace(/,/g, "");
-    total += Number(commanSeparatedNumber);
+    total += Number(getValueWithoutCediSign( commanSeparatedNumber ));
   });
   return total;
 }

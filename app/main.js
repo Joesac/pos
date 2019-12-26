@@ -38,7 +38,7 @@ function createWindow() {
   })
 
   printWindow = new BrowserWindow({
-    show: false,
+    // show: false,
     webPreferences: {
       nodeIntegration: true
     }

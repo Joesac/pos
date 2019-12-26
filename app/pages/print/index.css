@@ -67,6 +67,11 @@ hr {
   width: inherit;
 }
 
+.container .total-container table .total {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
 .container .money-issues {
   width: 100%;
 }

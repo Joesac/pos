@@ -14,7 +14,7 @@
 
 <body>
 
-    <div class="login-page">
+    <div class="login-page hide">
         <div class="login-form-wrapper">
             <div class="ui form">
                 <h3>Sign In</h3>
@@ -39,22 +39,22 @@
 
     <div class="ui sidebar inverted vertical menu">
         <a class="item" id="btnMenuSell">
-            <i class="money bill alternate outline icon"></i>SELL
+            <i class="money bill alternate outline icon"></i>Sell
         </a>
         <a class="item" id="btnMenuUser">
-            <i class="icon user"></i> USERS
+            <i class="icon user"></i> Users
         </a>
         <a class="item" id="btnMenuProduct">
-            <i class="icon product hunt"></i>PRODUCT
+            <i class="icon product hunt"></i>Product
         </a>
         <a class="item" id="btnMenuReport">
-            <i class="icon chart bar outline"></i>REPORT
+            <i class="icon chart bar outline"></i>Report
         </a>
         <a class="item" id="btnMenuReceipt">
-            <i class="icon closed captioning outline"></i>RECEIPT
+            <i class="icon closed captioning outline"></i>Receipt
         </a>
         <a class="item" id="btnMenuDiscount">
-            <i class="icon tag"></i>DISCOUNT
+            <i class="icon tag"></i>Discount
         </a>
     </div>
     <div class="ui top fixed menu">
@@ -125,7 +125,7 @@
                         <div class="ui small form">
                             <div class="three fields">
                                 <div class="field">
-                                    <label>Begin report generation from</label>
+                                    <label>Start from</label>
                                     <div class="ui calendar" id="df">
                                         <div class="ui  fluid input left icon">
                                             <i class="calendar icon"></i>
@@ -134,7 +134,7 @@
                                     </div>
                                 </div>
                                 <div class="field">
-                                    <label>End report generation at</label>
+                                    <label>End at</label>
                                     <div class="ui calendar" id="dt">
                                         <div class="ui  fluid input left icon">
                                             <i class="calendar icon"></i>
@@ -235,17 +235,17 @@
                                                 <h3>TOTAL</h3>
                                             </td>
                                             <td class="total">
-                                                <h3 id="receiptTotalVal"></h3>
+                                                <span>&#8373;</span><span id="receiptTotalVal"></span>
                                             </td>
                                         </tr>
                                     </table>
                                 </div>
 
                                 <div class="money-issues">
-                                    <div>Amount Received: <span class="amountReceived"></span></div>
-                                    <div>Change: <span class="changeGiven"></span></div>
+                                    <div>Amount Received: &#8373;<span class="amountReceived"></span></div>
+                                    <div>Change: &#8373;<span class="changeGiven"></span></div>
                                     <div>Discount: <span class="receiptDiscount"></span></div>
-                                    <div>Discount Qualify Amount: <span class="receiptDiscountCondAmt"></span></div>
+                                    <div>Discount Qualify Amount: &#8373;<span class="receiptDiscountCondAmt"></span></div>
                                 </div>
 
                                 <div class="footer">
@@ -290,10 +290,10 @@
             <div class="products-current-sale-container">
                 <div class="products">
                     <div class="menu">
-                        <button class="ui button big youtube" id="btnNew">New</button>
+                        <button class="ui button large fluid youtube" id="btnNew">New</button>
                     </div>
                     <div class="search-container">
-                        <div class="ui fluid input icon">
+                        <div class="ui fluid input icon big">
                             <input type="text" id="txtSearch" placeholder="Search for a product to sell...">
                             <i class="icon search"></i>
                         </div>

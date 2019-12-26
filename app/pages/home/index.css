@@ -1,7 +1,7 @@
 :root {
   --products-area-container-width: 500px;
   --default-spacing: 1rem;
-  --topbar-height: 50px;
+  --topbar-height: 56px;
   --default-border-color: rgba(34, 36, 38, 0.15);
 }
 
@@ -23,10 +23,14 @@
   color: white;
 }
 
+.ui.menu {
+  border: none;
+}
+
 .sidebar.menu a.item {
-  font-size: 1.3rem;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  font-size: 1.2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .login-page {
@@ -65,7 +69,6 @@
 
 .topbar {
   width: 100%;
-  padding: var(--default-spacing);
   background-color: #1b1c1d;
   color: white;
   display: flex;
@@ -74,11 +77,18 @@
 
 .topbar .app-name {
   font-size: 1.2rem;
+  display: flex;
+  width: 200px;
+  align-items: center;
 }
 
 .topbar .app-name #menuBars {
   cursor: pointer;
-  padding-right: var(--default-spacing);
+  height: var(--topbar-height);
+  width: var(--topbar-height);
+  background: black;
+  padding: 1.4rem 1rem;
+  margin-right: var(--default-spacing);
 }
 
 .topbar .widgets {
@@ -230,6 +240,11 @@
   text-align: center;
 }
 
+.app-container .inner-page.receipt-page .receipt-inner-container .receipt-right .recipt-plus-button-container .actual-receipt-platform .total-container {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
 .app-container .inner-page.receipt-page .receipt-inner-container .receipt-right .recipt-plus-button-container .actual-receipt-platform .footer span {
   display: block;
 }
@@ -241,7 +256,6 @@
 
 .app-container .products-current-sale-container {
   width: 100%;
-  padding: var(--default-spacing);
   display: flex;
   padding-top: calc(var(--topbar-height) + var(--default-spacing));
 }
@@ -249,6 +263,10 @@
 .app-container .products-current-sale-container .current-sale {
   width: calc(100% - var(--products-area-container-width));
   margin-left: var(--products-area-container-width);
+}
+
+.app-container .products-current-sale-container .current-sale h2 {
+  padding-left: var(--default-spacing);
 }
 
 .app-container .products-current-sale-container .current-sale .cart {
@@ -260,6 +278,11 @@
 .app-container .products-current-sale-container .current-sale .cart table td:nth-child(n + 2) {
   text-align: center;
   margin-bottom: 0;
+}
+
+.app-container .products-current-sale-container .current-sale .cart table th:first-child,
+.app-container .products-current-sale-container .current-sale .cart table td:first-child {
+  padding-left: var(--default-spacing) !important;
 }
 
 .app-container .products-current-sale-container .current-sale .cart table th {
@@ -289,33 +312,43 @@
   display: flex;
   align-items: center;
   border-top: 1px solid var(--default-border-color);
+  padding-left: var(--default-spacing);
+  padding-right: var(--default-spacing);
 }
 
 .app-container .products-current-sale-container .products {
   width: var(--products-area-container-width);
-  padding: var(--default-spacing);
-  border-right: 1px solid var(--default-border-color);
+  padding-bottom: var(--default-spacing);
+  border-right: 2px solid #1b1c1d;
   position: fixed;
   top: var(--topbar-height);
   left: 0;
   bottom: 0;
 }
 
-.app-container .products-current-sale-container .products .menu {
-  margin-bottom: var(--default-spacing);
+.app-container .products-current-sale-container .products .menu button {
+  border-radius: 0;
+  padding: 2rem;
+  margin: 0;
 }
 
 .app-container .products-current-sale-container .products .search-container {
   margin-bottom: var(--default-spacing);
 }
 
+.app-container .products-current-sale-container .products .search-container input {
+  border-radius: 0;
+  border-width: 0 0 2px 0;
+}
+
 .app-container .products-current-sale-container .products .display-search-results-wrapper {
   overflow-y: auto;
   height: calc( 100vh - calc( 60px + var(--topbar-height) + var(--default-spacing) * 3 + 38px + 50px ) - var(--default-spacing));
-  margin-bottom: var(--default-spacing);
+  height: calc(100vh - (var(--topbar-height) + 72px + (48px * 2) + 35px));
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+  justify-content: space-between;
 }
 
 .app-container .products-current-sale-container .products .display-search-results-wrapper > h2 {
@@ -327,17 +360,20 @@
 
 .app-container .products-current-sale-container .products .display-search-results-wrapper .product-item {
   padding: var(--default-spacing);
-  width: 140px;
   height: 100px;
-  margin-right: var(--default-spacing);
-  margin-bottom: var(--default-spacing);
+  width: calc((var(--products-area-container-width) / 3) - 2px);
+  margin: 0 0 1px 0;
+  border-radius: 0;
+  font-size: 1rem;
 }
 
 .app-container .products-current-sale-container .products .checkout-holder {
-  height: 50px;
   display: flex;
 }
 
 .app-container .products-current-sale-container .products .checkout-holder button {
   width: 50%;
+  border-radius: 0;
+  margin: 0;
+  padding: 2rem;
 }

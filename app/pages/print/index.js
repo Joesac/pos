@@ -42,7 +42,7 @@ ipc.on('print-automatically', (evt, data) => {
         }
     }
 
-    receiptTotalVal.text('GHC' + Number(amountDue).toFixed(2))
+    receiptTotalVal.text(Number(amountDue).toFixed(2))
     amountReceived.text(sale.amountReceived)
     changeGiven.text((Number(sale.amountReceived) - Number(amountDue)).toFixed(2))
     receiptDiscount.text(sale.discount + '%')
