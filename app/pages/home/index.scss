@@ -290,6 +290,7 @@
     .current-sale {
       width: calc(100% - var(--products-area-container-width));
       margin-left: var(--products-area-container-width);
+      position: relative;
       
       .current-sales-header {
         display: flex;
@@ -300,18 +301,24 @@
 
         #currentItemDiscountContainer {
           position: absolute;
-          right: -100px;
-          top: 0;
+          right: 0px; //-180px;
+          top: -72px;
           bottom: 0;
           width: 180px;
-          border-left: 2px solid var(--default-border-color);
+          height: 70px;
           display: flex;
           align-items: center;
-          transition: right 1s ease-in;
+          transition: top .1s ease-in;
 
           input {
             text-align: center;
-            height: inherit;
+            height: 70px;
+            border-width: 0;
+            border-radius: 0;
+            border-left: 2px solid var(--default-border-color);
+            font-size: 1.3rem;
+            font-weight: bold;
+            width: 180px;
           }
         }
         

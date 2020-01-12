@@ -1012,12 +1012,11 @@ tblCart.on("click", ".trash-btn", function() {
 
 // Clicking on Cash Charge Button
 btnChargeCash.on("click", function() {
-  console.log(tblCart.find('tbody tr').length)
   if (tblCart.find('tbody tr').length) {
-
-  amountCustomerPaidModal
-    .modal({ closable: false })
-    .modal("show");
+    btnCheckoutAmountCustomerPaid.removeAttr('disabled')
+    amountCustomerPaidModal
+      .modal({ closable: false })
+      .modal("show");
   }
 });
 
@@ -1082,7 +1081,6 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
     data: JSON.stringify(dataToSend),
     dataType: "json",
     success: function(res) {
-      console.log(res)
       if (res.lowerPdt) {
         errorTextContainer.html(`<p>Available Quantity of ${res.lowerPdt[0].name} is less than what is requested to sell</p>`)
         txtAmountReceived.closest(".form").addClass('error')
@@ -1090,6 +1088,7 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
         return false
       }
       ipc.send("prepare-receipt-print", res);
+      btnCheckoutAmountCustomerPaid.attr('disabled', 'disabled')
       // amountCustomerPaidModal.modal("close")
     },
     error: function(e) {
@@ -1114,17 +1113,17 @@ const btnDiscount = $("#btnDiscount")
 const currentItemDiscountContainer = $("#currentItemDiscountContainer")
 let currentSaleDiscountFlag = false
 
-btnDiscount.click(function() {
+btnDiscount.on('click', function() {
   currentSaleDiscountFlag = !currentSaleDiscountFlag
-  let currentItemDiscountContainerWidth = currentItemDiscountContainer.width()
+  let currentItemDiscountContainerWidth = 72 //currentItemDiscountContainer.width()
   let rightPos = -currentItemDiscountContainerWidth
   let storedDiscountDetails = JSON.parse(localStorage.getItem("discountConfiguration"))
   let generalDiscountState = storedDiscountDetails.enabled || false
   let generalConditionDiscountState = storedDiscountDetails.conditionEnabled || false
-
+  
   if (currentSaleDiscountFlag) {
     // show the current sale discount input
-    rightPos = currentItemDiscountContainerWidth
+    rightPos = 0
     currentSaleDiscountRate.focus()
     discountRowContainer.removeClass('hide')
   } else {
@@ -1139,7 +1138,7 @@ btnDiscount.click(function() {
     cartDiscountRateCalculatedAmount.html("&#8373;" + b.discountAmount)
   }
   
-  currentItemDiscountContainer.css('right', `${rightPos}px`)
+  currentItemDiscountContainer.css('top', `${rightPos}px`)
 })
 
 // Typing the specific sale discount
