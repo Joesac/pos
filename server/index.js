@@ -315,4 +315,25 @@ app.delete("/products/:id", getProduct, async (req, res) => {
   }
 });
 
+app.post("/refund/items", async (req, res) => {
+  let { checkoutId, pdtsIdAry } = req.body
+  
+  try {
+    for (i = 0; i < pdtsIdAry.length; i++) {
+      let pdtId = pdtsIdAry[i]
+      
+      // deletedPdts = await Checkout.deleteOne({ _id: mongoose.Types.ObjectId(checkoutId )}, )
+
+      deletedPdts = await Checkout.deleteOne-(
+        { _id: mongoose.Types.ObjectId( checkoutId ) }, 
+        { $pull: { 'sale.product': { _id: mongoose.Types.ObjectId( pdtId ) } } }
+        // { $pull: { timestamp: new Date() } }
+      )
+    }
+    res.json(deletedPdts)
+  } catch(err) {
+    res.status(500).json({ "message": err.message })
+  }
+})
+
 app.listen("3000", () => console.log("Server started on port 3000..."));

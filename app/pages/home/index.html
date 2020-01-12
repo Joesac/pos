@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>POS</title>
+    <title>TeleMart</title>
     <link rel="stylesheet" href="../../vendor/semantic-ui/semantic.min.css">
     <link rel="stylesheet" href="../../vendor/semantic-ui/calendar.min.css">
     <link rel="stylesheet" href="../../styles/global.min.css">
@@ -14,7 +14,7 @@
 
 <body>
 
-    <div class="login-page hide">
+    <div class="login-page">
         <div class="login-form-wrapper">
             <div class="ui form">
                 <h3>Sign In</h3>
@@ -186,15 +186,19 @@
                     </div>
                     <div class="receipt-right">
                         <div class="recipt-plus-button-container">
-                            <button class="ui button black" id="btnPrintReceiptOnPlatform">Print</button>
+                            <div class="receipt-actions-container">
+                                <button class="ui button blue" id="btnPrintReceiptOnPlatform">Print</button>
+                                <!-- <button class="ui button green" id="btnTransactionRefund">Refund</button> -->
+                            </div>
+
                             <div class="actual-receipt-platform">
-                                <div class="about-company">
+                                <!-- <div class="about-company">
                                     Be-Nice Ventures<br>
                                     P.O.Box RY127<br>
                                     Kumasi - Ghana<br>
                                     Loc: Abuakwa - Maakro<br>
                                     Tel: 0244831710/0546597114
-                                </div>
+                                </div> -->
 
                                 <div class="table-receipt-preamble">
                                     <table>
@@ -245,13 +249,14 @@
                                     <div>Amount Received: &#8373;<span class="amountReceived"></span></div>
                                     <div>Change: &#8373;<span class="changeGiven"></span></div>
                                     <div>Discount: <span class="receiptDiscount"></span></div>
-                                    <div>Discount Qualify Amount: &#8373;<span class="receiptDiscountCondAmt"></span></div>
+                                    <div>Discount Qualify Amount: &#8373;<span class="receiptDiscountCondAmt"></span>
+                                    </div>
                                 </div>
 
-                                <div class="footer">
+                                <!-- <div class="footer">
                                     <span>Thanks for shopping with us</span>
                                     <span>Software by: PlainBlue Inc. 0542462657</span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -278,19 +283,23 @@
                         </div>
                         <div class="field disabled">
                             <label>Apply if Amount Due is greater than or equal to:</label>
-                            <input type="text" value="0" placeholder="Apply if value exceeds" id="txtDiscountExceedAmount" disabled>
+                            <input type="text" value="0" placeholder="Apply if value exceeds"
+                                id="txtDiscountExceedAmount" disabled>
                         </div>
                         <button class="ui button black" id="btnSaveDiscountSettings">Save Settings</button>
                     </div>
                     <div class="ui green message hide discount-success-msg">Settings saved successfully!</div>
                     <div class="ui red message hide discount-rate-error-msg">Discount Rate cannot be empty!</div>
-                    <div class="ui red message hide discount-conditional-amount-error-msg">Conditional Amount cannot be empty!</div>
+                    <div class="ui red message hide discount-conditional-amount-error-msg">Conditional Amount cannot be
+                        empty!</div>
                 </div>
             </div>
             <div class="products-current-sale-container">
                 <div class="products">
-                    <div class="menu">
+                    <div class="menu-actions">
                         <button class="ui button large fluid youtube" id="btnNew">New</button>
+                        <!-- <button class="ui button large fluid orange" id="btnRefund">Refund</button> -->
+                        <button class="ui button large fluid green" id="btnDiscount">Discount</button>
                     </div>
                     <div class="search-container">
                         <div class="ui fluid input icon big">
@@ -302,12 +311,19 @@
                         <h2>Nothing Searched for yet</h2>
                     </div>
                     <div class="checkout-holder">
-                        <button class="ui button blue fluid" id="btnChargeCash">Cash</button>
-                        <button class="ui button green fluid" id="btnChargeCheque">Cheque</button>
+                        <button class="ui button twitter fluid" id="btnChargeCash">Charge</button>
+                        <!-- <button class="ui button green fluid" id="btnChargeCheque">Cheque</button> -->
                     </div>
                 </div>
                 <div class="current-sale">
-                    <h2>Current Sales</h2>
+                    <div class="current-sales-header">
+                        <h2>Current Sales</h2>
+                        <div id="currentItemDiscountContainer">
+                            <div class="ui input">
+                                <input type="text" placeholder="Discount Rate" id="currentSaleDiscountRate">
+                            </div>
+                        </div>
+                    </div>
                     <div class="cart">
                         <table class="ui very basic table" id="tblCart">
                             <thead>
@@ -323,22 +339,26 @@
                             </tbody>
                         </table>
                         <div class="discountRowContainer hide">
-                            <div class="">Discount</div>
-                            <div class="spacer"></div>
-                            <div id="cartDiscountRatePercentageValue">0</div>%
+                            <div class="">Discount (<span id="cartDiscountRatePercentageValue">0</span>%)</div>
+                            <!-- <div class="spacer"></div>
+                            <div id="cartDiscountRatePercentageValue">0</div>% -->
                             <div class="spacer"></div>
                             <div id="cartDiscountRateCalculatedAmount">0.00</div>
                         </div>
                     </div>
 
                     <div class="total-container">
-                        <div><h3>TOTAL</h3></div>
+                        <div>
+                            <h3>TOTAL</h3>
+                        </div>
                         <div class="spacer"></div>
                         <div class="total" id="totalAmountDueVal">
                             <h3>GHC0.00</h3>
                         </div>
                         <div class="spacer"></div>
-                        <div><h3>AMOUNT DUE</h3></div>
+                        <div>
+                            <h3>AMOUNT DUE</h3>
+                        </div>
                         <div class="spacer"></div>
                         <div class="total" id="totalVal">
                             <h3>GHC0.00</h3>
@@ -526,6 +546,32 @@
         <div class="actions">
             <button class="ui button deny red" id="btnCloseEditModal">Close</button>
             <button class="ui button green saveUserEdit" id="">Save</button>
+        </div>
+    </div>
+
+    <!-- Refund Modal -->
+    <div class="ui modal small" id="refundModal">
+        <div class="header">
+            Refund
+        </div>
+        <div class="content">
+            <h3>Select Items to refund</h3>
+            <p>Refunding items will remove them from the checkouts and restore their quantities back to the available stock</p>
+            <table class="ui unstackable table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Item</th>
+                        <th class="right aligned">Amount</th>
+                    </tr>
+                </thead>
+                <tbody class="items-to-refund-tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="actions">
+            <button class="ui button deny red" id="btnCloseRefundModal">Close</button>
+            <button class="ui button green" id="btnProceedRefund" disabled>Refund</button>
         </div>
     </div>
 

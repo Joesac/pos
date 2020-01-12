@@ -17,6 +17,10 @@ const totalContainer = $(".total-container");
 const btnClosePrintReceiptModal = $("#btnClosePrintReceiptModal");
 const txtAmountReceived = $("#txtAmountReceived");
 const btnNew = $("#btnNew");
+const btnRefund = $("#btnRefund");
+const btnTransactionRefund = $("#btnTransactionRefund")
+const refundModal = $("#refundModal")
+const btnProceedRefund = $("#btnProceedRefund")
 const iconMenu = $("#iconMenu");
 const menuBars = $("#menuBars");
 const btnMenuUser = $("#btnMenuUser");
@@ -891,24 +895,44 @@ displaySearchResultsWrapper.on("click", ".product-item", function() {
 
     let tds = tblCart.find("td.pdt-item-total");
     let sumTotal = sumAllCartItems(tds);
+
     totalAmountDueVal.children("h3").html("&#8373;" + sumTotal.toFixed(2))
-    totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
+    
+    // Check if Current Sale discount is enabled
+    if (currentSaleDiscountFlag) {
+
+    }
+    
+    totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal, currentSaleDiscountFlag)));
   }
-  // Set forcus to the searchbox
+  // Set focus to the searchbox
   txtSearch.focus();
 });
 
 function calculateDiscountAmount(principal, discountRate) {
-  return Number(principal) * (Number(discountRate) / 100)
+  return (Number(principal) * (Number(discountRate) / 100)).toFixed(2)
 }
 const discountRowContainer = $(".discountRowContainer")
-function calculateAmountDueAndDiscounts(sumTotal) {
+function calculateAmountDueAndDiscounts(sumTotal, currentSaleDiscountEnabled = false) {
+
+  let discountCalculatedAmount = 0
+
+  if (currentSaleDiscountEnabled) {
+    let tds = tblCart.find('tr td:nth-child(4)')
+  
+    let totalAmountToCheckout = sumAllCartItems(tds)
+    let discount = calculateDiscountAmount(totalAmountToCheckout, currentSaleDiscountRate.val())
+    
+    cartDiscountRateCalculatedAmount.text(discount)
+    cartDiscountRatePercentageValue.text(currentSaleDiscountRate.val())
+    return (totalAmountToCheckout - discount).toFixed(2)
+  }
+
   // Work on discount
   let amountAppliedToQualifyDiscount = 0
   cartDiscountRatePercentageValue.text(discountRatePercentageValue.val().trim())
   let discCalAmount = calculateDiscountAmount(sumTotal, cartDiscountRatePercentageValue.text())
-  cartDiscountRateCalculatedAmount.html('&#8373;' + discCalAmount.toFixed(2))
-  let discountCalculatedAmount = 0
+  cartDiscountRateCalculatedAmount.html('&#8373;' + Number(discCalAmount).toFixed(2))
 
   // Show or hide the discrount row
   if (checkBoxState(toggleEnableDiscount)) {
@@ -970,7 +994,7 @@ tblCart.on("keyup", ".pdt-item-qty", function() {
   let sumTotal = sumAllCartItems(tds);
   
   totalAmountDueVal.children("h3").html("&#8373;" + sumTotal.toFixed(2))
-  totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
+  totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal, currentSaleDiscountFlag)));
 });
 
 // Removing item from Cart
@@ -982,15 +1006,19 @@ tblCart.on("click", ".trash-btn", function() {
   let sumTotal = sumAllCartItems(tds);
 
   totalAmountDueVal.children("h3").html("&#8373;" + sumTotal.toFixed(2))
-  totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal)));
+  totalVal.children("h3").html("&#8373;" + formatNumberToCurrencyFormat(calculateAmountDueAndDiscounts(sumTotal, currentSaleDiscountFlag)));
   txtSearch.focus()
 });
 
 // Clicking on Cash Charge Button
 btnChargeCash.on("click", function() {
+  console.log(tblCart.find('tbody tr').length)
+  if (tblCart.find('tbody tr').length) {
+
   amountCustomerPaidModal
     .modal({ closable: false })
     .modal("show");
+  }
 });
 
 // Cancel Cash Charge Modal
@@ -1005,6 +1033,7 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
     errorTextContainer.html("<p>Amount paid is smaller than amount due</p>")
     txtAmountReceived.closest(".form").addClass('error')
     txtAmountReceived.val("")
+    txtAmountReceived.focus()
     return false;
   }
   
@@ -1023,14 +1052,29 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
     productsPurchasedArray.push(productPurchased);
   });
   
-  dataToSend.products = productsPurchasedArray;
-  dataToSend.amountReceived = txtAmountReceived.val();
-  dataToSend.seller = displayUsername.text();
-  dataToSend.receiptNumber = 0;
-  dataToSend.discount = discountRate;
-  dataToSend.discountConditionalAmount = discountConditionalValue;
-  dataToSend.paymentType = "cash";
+  dataToSend.products = productsPurchasedArray
+  dataToSend.amountReceived = txtAmountReceived.val()
+  dataToSend.seller = displayUsername.text()
+  dataToSend.receiptNumber = 0
+  dataToSend.paymentType = "cash"
+  dataToSend.discount = 0
+  dataToSend.discountConditionalAmount = 0
 
+  let storedDiscountDetails = JSON.parse(localStorage.getItem("discountConfiguration"))
+  let generalDiscountState = storedDiscountDetails.enabled || false
+  let generalConditionDiscountState = storedDiscountDetails.conditionEnabled || false
+
+  if (currentSaleDiscountFlag) {
+    dataToSend.discount =  currentSaleDiscountRate.val()
+  } else {
+    if (generalDiscountState) {
+      dataToSend.discount = discountRate;
+      if (generalConditionDiscountState) {
+        dataToSend.discountConditionalAmount = discountConditionalValue;
+      }
+    }
+  }
+  
   $.ajax({
     type: "POST",
     contentType: "application/json",
@@ -1042,9 +1086,11 @@ btnCheckoutAmountCustomerPaid.on("click", function() {
       if (res.lowerPdt) {
         errorTextContainer.html(`<p>Available Quantity of ${res.lowerPdt[0].name} is less than what is requested to sell</p>`)
         txtAmountReceived.closest(".form").addClass('error')
-        return
+        txtAmountReceived.focus()
+        return false
       }
       ipc.send("prepare-receipt-print", res);
+      // amountCustomerPaidModal.modal("close")
     },
     error: function(e) {
       alert(e.message);
@@ -1063,8 +1109,150 @@ btnNew.click(function() {
   displaySearchResultsWrapper.html("<h2>Nothing Searched for yet</h2")
 });
 
-// Functions
+// Choosing discount for a specific item
+const btnDiscount = $("#btnDiscount")
+const currentItemDiscountContainer = $("#currentItemDiscountContainer")
+let currentSaleDiscountFlag = false
 
+btnDiscount.click(function() {
+  currentSaleDiscountFlag = !currentSaleDiscountFlag
+  let currentItemDiscountContainerWidth = currentItemDiscountContainer.width()
+  let rightPos = -currentItemDiscountContainerWidth
+  let storedDiscountDetails = JSON.parse(localStorage.getItem("discountConfiguration"))
+  let generalDiscountState = storedDiscountDetails.enabled || false
+  let generalConditionDiscountState = storedDiscountDetails.conditionEnabled || false
+
+  if (currentSaleDiscountFlag) {
+    // show the current sale discount input
+    rightPos = currentItemDiscountContainerWidth
+    currentSaleDiscountRate.focus()
+    discountRowContainer.removeClass('hide')
+  } else {
+    txtSearch.focus()    
+    currentSaleDiscountRate.val("")
+    let b = calculateDiscountDetails(generalDiscountState, generalConditionDiscountState)
+    if (!generalDiscountState) {
+      discountRowContainer.addClass('hide')
+    }
+    totalVal.children("h3").html("&#8373;" + (b.amountDueAfterDiscount).toFixed(2))
+    cartDiscountRatePercentageValue.text(b.discountRate)
+    cartDiscountRateCalculatedAmount.html("&#8373;" + b.discountAmount)
+  }
+  
+  currentItemDiscountContainer.css('right', `${rightPos}px`)
+})
+
+// Typing the specific sale discount
+const currentSaleDiscountRate = $("#currentSaleDiscountRate")
+currentSaleDiscountRate.on("keyup", function() {
+  let $this = $(this)
+  let tds = tblCart.find('tr td:nth-child(4)')
+  
+  let totalAmountToCheckout = sumAllCartItems(tds)
+  let discount = calculateDiscountAmount(totalAmountToCheckout, $this.val())
+  
+  cartDiscountRateCalculatedAmount.text(discount)
+  cartDiscountRatePercentageValue.text($this.val())
+  totalVal.children("h3").html("&#8373;" + (totalAmountToCheckout - discount).toFixed(2))
+})
+
+function calculateDiscountDetails(genDiscFlag, discExcAmtFlag) {
+  calcValues = {}
+  let tds = tblCart.find("td.pdt-item-total");
+  let totalItemsBoughtAmt = sumAllCartItems(tds)
+
+  if (genDiscFlag) {
+    
+    calcValues.discountRate = discountRatePercentageValue.val()
+    calcValues.discountAmount = calculateDiscountAmount(totalItemsBoughtAmt, discountRatePercentageValue.val())
+    calcValues.amountDueAfterDiscount = totalItemsBoughtAmt - calcValues.discountAmount
+
+    if (discExcAmtFlag) {
+      if (totalItemsBoughtAmt >= txtDiscountExceedAmount.val()) {
+        calcValues.amountDueAfterDiscount = (totalItemsBoughtAmt - calcValues.discountAmount)
+      } else {
+        calcValues.amountDueAfterDiscount = totalItemsBoughtAmt
+      }
+    } else {
+      // calcValues.discountAmount = (totalItemsBoughtAmt - calcValues.discountAmount)
+    }
+  } else {
+    calcValues.discountRate = 0
+    calcValues.discountAmount = 0
+    calcValues.amountDueAfterDiscount = totalItemsBoughtAmt
+  }
+
+  return calcValues
+}
+
+// Clicking on refund button on the main window
+btnRefund.click(function() {
+  receiptPage.removeClass('hide')
+})
+
+// Clicking on refund button on the transaction screen
+let pdtsToRefundToSend = {}
+let pdtsToRefundPdtIds = []
+btnTransactionRefund.click(function() {
+  pdtsToRefundPdtIds = []
+  let data = '';
+  
+  refundModal.modal({ closable: false }).modal('show')
+  pdtsToRefundToSend.checkoutId = receiptCurrentlyViewed._id
+
+  pdtData = receiptCurrentlyViewed.sale.products
+  for (i = 0; i < pdtData.length; i++) {
+    data += `<tr><td class="collapsing"><div class="ui checkbox itemToRefundChkbox" id="${pdtData[i]._id}"><input type="checkbox"><label></label></div></td>`
+    data += `<td>${pdtData[i].name}</td><td class="right aligned">${pdtData[i].price * pdtData[i].qty}</td></tr>`
+  }
+  refundModal.find('tbody').empty().append(data)
+})
+
+// Selecting the items to refund
+$('.items-to-refund-tbody').on('click', '.itemToRefundChkbox', function() {
+  let $this = $(this)
+  pdtId = $this.attr('id')
+
+  if (checkBoxState($this)) {
+    if (!pdtsToRefundPdtIds.includes(pdtId)) {
+      pdtsToRefundPdtIds.push(pdtId)
+    }
+  } else {
+    pdtsToRefundPdtIds = pdtsToRefundPdtIds.filter((ele, i, ary) => {
+      return ele !== pdtId
+    })
+  }
+
+  // Disable the proceed with refund button if the Products rot refund id array is empty
+  if (!pdtsToRefundPdtIds.length) {
+    btnProceedRefund.attr("disabled", "disabled")
+  } else {
+    btnProceedRefund.removeAttr("disabled")
+  }
+})
+
+btnProceedRefund.click(function() {
+  btnProceedRefund.addClass('loading')
+  pdtsToRefundToSend.pdtsIdAry = pdtsToRefundPdtIds
+  $.ajax({
+    type: 'POST',
+    contentType: 'application/json',
+    url: `${base_url}/refund/items`,
+    data: JSON.stringify(pdtsToRefundToSend),
+    dataType: 'json',
+    success: function(resData) {
+      console.log(resData)
+    },
+    error: function(err) {
+      console.log(err)
+    },
+    complete: function() {
+      btnProceedRefund.removeClass('loading')
+    }
+  })
+})
+
+// Functions
 function getValueWithoutCediSign(cediIncludedAmount) {
   return Number(cediIncludedAmount.substr(1))
 }
