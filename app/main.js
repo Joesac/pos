@@ -23,7 +23,7 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, '/pages/home/index.html'))
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", function() {
     mainWindow = null

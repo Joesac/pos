@@ -1115,6 +1115,7 @@ let currentSaleDiscountFlag = false
 
 btnDiscount.on('click', function() {
   currentSaleDiscountFlag = !currentSaleDiscountFlag
+  let $this = $(this)
   let currentItemDiscountContainerWidth = 72 //currentItemDiscountContainer.width()
   let rightPos = -currentItemDiscountContainerWidth
   let storedDiscountDetails = JSON.parse(localStorage.getItem("discountConfiguration"))
@@ -1123,10 +1124,13 @@ btnDiscount.on('click', function() {
   
   if (currentSaleDiscountFlag) {
     // show the current sale discount input
+    $this.addClass("individualDiscountFlag")
     rightPos = 0
     currentSaleDiscountRate.focus()
     discountRowContainer.removeClass('hide')
+
   } else {
+    $this.removeClass("individualDiscountFlag")
     txtSearch.focus()    
     currentSaleDiscountRate.val("")
     let b = calculateDiscountDetails(generalDiscountState, generalConditionDiscountState)

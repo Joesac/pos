@@ -90,7 +90,10 @@
   width: var(--topbar-height);
   background: black;
   padding: 1.4rem 1rem;
-  margin-right: var(--default-spacing);
+}
+
+.topbar .app-name .app-title {
+  margin-left: var(--default-spacing);
 }
 
 .topbar .widgets {
@@ -356,6 +359,8 @@
 .app-container .products-current-sale-container .current-sale .cart .input > input {
   max-width: 60px;
   text-align: center !important;
+  font-weight: bold;
+  border-width: 2px;
 }
 
 .app-container .products-current-sale-container .current-sale .total-container {
@@ -386,6 +391,10 @@
   padding: 2rem;
   margin: 0;
   width: 50%;
+}
+
+.app-container .products-current-sale-container .products .menu-actions button.individualDiscountFlag {
+  background-color: #219036 !important;
 }
 
 .app-container .products-current-sale-container .products .search-container {
